@@ -1,18 +1,24 @@
+using Distributed.Core.Hubs;
 using Distributed.Core.Messages;
 using Distributed.Core.Schema;
+using Distributed.Core.Sync;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Distributed.Core.Services;
-public abstract class EntityCommand<T,Db> : ICommand<T,Db>
+public abstract class EntityCommand<T,H,Db> : ICommand<T,Db>
 where T : Entity
+where H : EntityEventHub<T>
 where Db : DbContext
 {
-    protected Db db;
+    protected readonly Db db;
+    protected readonly IHubContext<H,IEventHub<T>> sync;
     protected DbSet<T> Set => db.Set<T>();
 
-    public EntityCommand(Db db)
+    public EntityCommand(Db db, IHubContext<H,IEventHub<T>> sync)
     {
         this.db = db;
+        this.sync = sync;
     }
 
     protected virtual Func<T, Task<T>>? OnAdd { get; set; }
@@ -25,7 +31,55 @@ where Db : DbContext
     protected virtual Func<T, Task>? AfterSave { get; set; }
     protected virtual Func<T, Task>? AfterRemove { get; set; }
 
+    Func<T, Task> SyncAdd => async (T entity) =>
+    {
+        SyncMessage<T> message = GenerateMessage(entity, "created");
+
+        await sync
+            .Clients
+            .All
+            .Add(message);
+    };
+
+    Func<T, Task> SyncUpdate => async (T entity) =>
+    {
+        SyncMessage<T> message = GenerateMessage(entity, "updated");
+
+        await sync
+            .Clients
+            .All
+            .Update(message);
+    };
+
+    Func<T, Task> SyncRemove => async (T entity) =>
+    {
+        SyncMessage<T> message = GenerateMessage(entity, "removed");
+
+        await sync
+            .Clients
+            .All
+            .Remove(message);
+    };
+
     #region Internal
+
+    protected virtual void LogAction(ISyncMessage<T> message, string action) =>
+        Console.WriteLine($"{action}: {message.Message}");
+
+    protected virtual string SetMessage(T entity, string action) =>
+        $"{typeof(T)} {entity.Value} successfully {action}";
+
+    protected SyncMessage<T> GenerateMessage(T entity, string action)
+    {
+        SyncMessage<T> message = new(
+            entity,
+            SetMessage(entity, action)
+        );
+
+        LogAction(message, action);
+
+        return message;
+    }
 
     protected async Task<ApiMessage<T>> Add(T entity)
     {
@@ -39,6 +93,8 @@ where Db : DbContext
 
             if (AfterAdd is not null)
                 await AfterAdd(entity);
+
+            await SyncAdd(entity);
 
             return new (entity, $"{typeof(T)} successfully added");
         }
@@ -60,6 +116,8 @@ where Db : DbContext
 
             if (AfterUpdate is not null)
                 await AfterUpdate(entity);
+
+            await SyncUpdate(entity);
 
             return new(entity, $"{typeof(T)} successfully updated");
         }
@@ -130,6 +188,8 @@ where Db : DbContext
             {
                 if (AfterRemove is not null)
                     await AfterRemove(entity);
+
+                await SyncRemove(entity);
 
                 return new(entity.Id, $"{typeof(T)} successfully removed");
             }

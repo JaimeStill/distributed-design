@@ -18,7 +18,7 @@ The following terms are used to break what is the traditional role of API-based 
 
 * **Commands** - User-based, public data mutation methods; represented by the standard **Save** and **Delete** methods of API services.
 
-* **Events** - Web Socket listeners used for broadcasting data mutations. Clients can also listen for events to determine whether the updates affect their current data context; if so, the data can be refreshed to ensure consumers are always working with the most up-to-date information.
+* **Events** - SignalR hubs used for broadcasting data mutations. Injected into **Commands**. Clients can also listen for events to determine whether the updates affect their current data context; if so, the data can be refreshed to ensure consumers are always working with the most up-to-date information.
 
 * **Sagas** - System-based, private data mutation methods; They isolate reactionary logic for determining how to handle effects of mutations triggered through **Events**.
 
