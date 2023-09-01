@@ -2,14 +2,22 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Distributed.Core.Extensions;
 public static class ConfigurationExtensions
 {
+    public static Action<JsonHubProtocolOptions> SignalRJsonOptions => (JsonHubProtocolOptions options) =>
+    {
+        options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.PayloadSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.PayloadSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    };
+
     public static IServiceCollection ConfigureCorsService(this WebApplicationBuilder builder) =>
         builder
             .Services
@@ -45,11 +53,8 @@ public static class ConfigurationExtensions
         builder
             .Services
             .AddSignalR()
-            .AddJsonProtocol(options =>
-            {
-                options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                options.PayloadSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-                options.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                options.PayloadSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-            });
+            .AddJsonProtocol(SignalRJsonOptions);
+
+    public static HubConnectionBuilder ConfigureJsonFormat(this HubConnectionBuilder builder) =>
+        builder.AddJsonProtocol(SignalRJsonOptions);
 }
