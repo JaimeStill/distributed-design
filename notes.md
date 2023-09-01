@@ -20,7 +20,7 @@ The following terms are used to break what is the traditional role of API-based 
 
 * **Events** - [SignalR hubs](./services/common/Distributed.Core/Hubs/EntityEventHub.cs) used for broadcasting data mutations. Injected into **Commands**. Clients can also listen for events to determine whether the updates affect their current data context; if so, the data can be refreshed to ensure consumers are always working with the most up-to-date information.
 
-* **Sagas** - System-based, private data mutation methods; they isolate reactionary logic for determining how to handle effects of mutations triggered through **Events**. They exist as [Sync clients](./services/common/Distributed.Core/Sync/Client/SyncClient.cs).
+* **Sagas** - System-based, private data mutation methods; they isolate reactionary logic for determining how to handle effects of mutations triggered through **Events**.
 
 This approach is important because it creates isolated boundaries around service responsiblities:
 * All data retrieval concerns associated with a specific data type can be shared across the system without worrying about exposing data manipulation logic.
