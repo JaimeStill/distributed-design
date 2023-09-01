@@ -30,3 +30,9 @@ This approach is important because it creates isolated boundaries around service
     * **Commands** allow user-driven data mutations to be exposed without having to consider all of the after-effects that should occur as a result
 
     * **Sagas** provide a single place for handling after-effects that do not require the same scrutiny (authentication / authorization) as **Commands**. They are private, internally managed mutations that facilitate recursive reactions across the whole data dependency hierarchy.
+
+## Service Workflow
+
+1. Sagas receive event sync clients for all relevant data in its dependency tree and register listeners during initialization
+2. Command methods trigger Event syncs
+3. Sagas execute methods in reaction to event syncs, which trigger further Saga method executions. This step completes recursively until the full data dependency tree is complete.
