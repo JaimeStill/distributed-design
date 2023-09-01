@@ -7,9 +7,13 @@
     * [common](./services/common/) - Contains code libraries for shared service infrastructure
         * [Distributed.Contracts](./services/common/Distributed.Contracts/) - Contains cross-domain infrastructure to faciliate cross-service interaction
         * [Distributed.Core](./services/common/Distributed.Core/) - Contains core infrastructure used to simplify building services
+            * [Controllers](./services/common/Distributed.Core/Controllers/) - Contains standardized base classes that simplify the creation of .NET Web API Controllers.
             * [Data](./services/common/Distributed.Core/Data/) - Contains classes that standardize Entity Framework Core interactions
             * [Extensions](./services/common/Distributed.Core/Extensions/) - Contains extensions that provide extended functinoality and standardized configuration
-            * [Schema](./services/common/Distributed.Core/Schema/) - Provides classes and interfaces that simplify building entity models
+            * [Graph](./services/common/Distributed.Core/Graph/) - Contains infrastructure that facilitates service-to-service HTTP communications through a publicly exposed subset of endpoints in an HTTP client service
+            * [Messages](./services/common/Distributed.Core/Messages/) - Contains classes that provide standardized message formats for return values
+            * [Schema](./services/common/Distributed.Core/Schema/) - Contains classes and interfaces that simplify building entity models
+            * [Sync](./services/common/Distributed.Core/Sync/) - Contains infrastructure that facilitates cross-service data synchronization via SignalR
     * [data](./services/data/) - Contains Entity Framework Core `DbContext` definitions and Migrations
         * [Distributed.Proposals.Data](./services/data/Distributed.Proposals.Data/) - **Proposals** service `ProposalsContext` and corresponding Migrations
         * [Distributed.Workflows.Data](./services/data/Distributed.Workflows.Data/) - **Workflows** service `WorkflowsContext` and corresponding Migrations
