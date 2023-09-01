@@ -37,7 +37,7 @@ The concept of the Saga needs to be developed further. Initially, I thought I mi
 
 Final ideas for this before the weekend:
 
-* There should be an `EventListener` that intercepts sync events originated from an `EntityEventHub`.
+* There should be an `EventListener` that intercepts sync events originated from an `EntityEventHub`. This is the `SyncClient` that alerts the service when data has been mutated that affects the state of the service.
 
 * The `Saga` should be defined as a standard service class that defines data mutation methods. The `Saga` should be aware of how to execute all direct mutations resulting from the event and trigger additional events as a result of these mutations. The process completes until the generated events require no more data mutations. 
 
