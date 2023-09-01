@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore;
@@ -10,13 +11,21 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Distributed.Core.Extensions;
 public static class ConfigurationExtensions
 {
-    public static Action<JsonHubProtocolOptions> SignalRJsonOptions => (JsonHubProtocolOptions options) =>
+    public static JsonSerializerOptions ConfigureJsonOptions(JsonSerializerOptions options)
     {
-        options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        options.PayloadSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-        options.PayloadSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-        options.PayloadSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-    };
+        options.Converters.Add(new JsonStringEnumConverter());
+        options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+
+        return options;
+    }
+
+    public static Action<JsonOptions> HttpJsonOptions => (JsonOptions options) =>
+        ConfigureJsonOptions(options.JsonSerializerOptions);
+
+    public static Action<JsonHubProtocolOptions> SignalRJsonOptions => (JsonHubProtocolOptions options) =>
+        ConfigureJsonOptions(options.PayloadSerializerOptions);
 
     public static IServiceCollection ConfigureCorsService(this WebApplicationBuilder builder) =>
         builder
@@ -41,13 +50,7 @@ public static class ConfigurationExtensions
         builder
             .Services
             .AddControllers()
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-            });
+            .AddJsonOptions(HttpJsonOptions);
 
     public static ISignalRServerBuilder ConfigureSignalRServices(this WebApplicationBuilder builder) =>
         builder
