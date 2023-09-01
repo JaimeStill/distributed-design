@@ -1,5 +1,13 @@
 # Notes
 
+## Supporting Service Infrastructure
+
+There are two APIs in the code base that facilitate cross-service interactions and synchronization:
+
+* The [Graph API](./services/common/Distributed.Core/Graph/) enables the registration of an `HttpClient`-based service for accessing a sub-set of interactions available on its corresponding service.
+
+* The [Sync API](./services/common/Distributed.Core/Sync/) enables SignalR-based services that define data synchronization endpoints that broadcast messages whenenver associated events occur. For instance, notification of whenever an entity is modified. It is the primary facilitator of the **Events** infrastructure outlined below.
+
 ## Service Infrastructure Responsibilities
 
 This section defines a localized approach to defining service infrastructure inspired by the [Command Query Responsiblity Segregation (CQRS)](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-data-persistence/cqrs-pattern.html), [Event Sourcing](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-data-persistence/service-per-team.html), and [Saga](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-data-persistence/saga-pattern.html) patterns.
