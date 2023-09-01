@@ -14,13 +14,13 @@ This section defines a localized approach to defining service infrastructure ins
 
 The following terms are used to break what is the traditional role of API-based services into smaller, more focused responsiblities:
 
-* **Queries** - Data retrieval methods; represented by the standard data accessors from traditional API services.
+* **Queries** - Data retrieval methods; represented by the standard data accessors from traditional API services. Exist as [Service classes](./services/common/Distributed.Core/Services/EntityQuery.cs).
 
-* **Commands** - User-based, public data mutation methods; represented by the standard **Save** and **Delete** methods of API services.
+* **Commands** - User-based, public data mutation methods; represented by the standard **Save** and **Delete** methods of API services. Exist as [Service classes](./services/common/Distributed.Core/Services/EntityCommand.cs).
 
-* **Events** - SignalR hubs used for broadcasting data mutations. Injected into **Commands**. Clients can also listen for events to determine whether the updates affect their current data context; if so, the data can be refreshed to ensure consumers are always working with the most up-to-date information.
+* **Events** - [SignalR hubs](./services/common/Distributed.Core/Hubs/EntityEventHub.cs) used for broadcasting data mutations. Injected into **Commands**. Clients can also listen for events to determine whether the updates affect their current data context; if so, the data can be refreshed to ensure consumers are always working with the most up-to-date information.
 
-* **Sagas** - System-based, private data mutation methods; They isolate reactionary logic for determining how to handle effects of mutations triggered through **Events**.
+* **Sagas** - System-based, private data mutation methods; they isolate reactionary logic for determining how to handle effects of mutations triggered through **Events**. They exist as [Sync clients](./services/common/Distributed.Core/Sync/Client/SyncClient.cs).
 
 This approach is important because it creates isolated boundaries around service responsiblities:
 * All data retrieval concerns associated with a specific data type can be shared across the system without worrying about exposing data manipulation logic.
@@ -30,9 +30,15 @@ This approach is important because it creates isolated boundaries around service
     * **Commands** allow user-driven data mutations to be exposed without having to consider all of the after-effects that should occur as a result
 
     * **Sagas** provide a single place for handling after-effects that do not require the same scrutiny (authentication / authorization) as **Commands**. They are private, internally managed mutations that facilitate recursive reactions across the whole data dependency hierarchy.
+    
+## Sagas
 
-## Service Workflow
+The concept of the Saga needs to be developed further. Initially, I thought I might be able to build out the Saga as a `SyncClient` with embedded functionality, but it seems that there ought to be a separation of those responsibilities.
 
-1. Sagas receive event sync clients for all relevant data in its dependency tree and register listeners during initialization
-2. Command methods trigger Event syncs
-3. Sagas execute methods in reaction to event syncs, which trigger further Saga method executions. This step completes recursively until the full data dependency tree is complete.
+Final ideas for this before the weekend:
+
+* There should be an `EventListener` that intercepts sync events originated from an `EntityEventHub`.
+
+* The `Saga` should be defined as a standard service class that defines data mutation methods. The `Saga` should be aware of how to execute all direct mutations resulting from the event and trigger additional events as a result of these mutations. The process completes until the generated events require no more data mutations. 
+
+***The `Saga` should only be concerned with data encapsulated in the service that defines it. All services should be self-sufficient with reacting to events.***
