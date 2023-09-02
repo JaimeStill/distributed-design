@@ -1,4 +1,3 @@
-using Distributed.Core.Hubs;
 using Distributed.Core.Messages;
 using Distributed.Core.Schema;
 using Distributed.Core.Sync;
@@ -6,7 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Distributed.Core.Services;
-public abstract class EntityCommand<T,H,Db> : ICommand<T,Db>
+public abstract class EntityCommand<T,H,Db> : ICommand<T>
 where T : Entity
 where H : EntityEventHub<T>
 where Db : DbContext

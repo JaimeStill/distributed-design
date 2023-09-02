@@ -2,8 +2,8 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Distributed.Core.Extensions;
 
-namespace Distributed.Core.Graph;
-public abstract class GraphClient
+namespace Distributed.Core.Gateway;
+public abstract class GatewayClient
 {
     protected JsonSerializerOptions JsonFormat;
     protected HttpClient http = new();
@@ -12,9 +12,9 @@ public abstract class GraphClient
 
     protected bool Available => endpointId.HasValue;
 
-    public GraphClient(GraphService graph, string name, JsonSerializerOptions? format)
+    public GatewayClient(GatewayService gateway, string name, JsonSerializerOptions? format)
     {
-        endpoint = graph.GetEndpoint(name);
+        endpoint = gateway.GetEndpoint(name);
         JsonFormat = format
             ?? ConfigurationExtensions.ConfigureJsonOptions(new JsonSerializerOptions());
     }

@@ -2,7 +2,7 @@ using Distributed.Core.Schema;
 using Distributed.Core.Sync;
 using Distributed.Core.Sync.Hub;
 
-namespace Distributed.Core.Hubs;
+namespace Distributed.Core.Services;
 public interface IEventHub<T> : ISyncHub<T>
 where T : Entity
 {

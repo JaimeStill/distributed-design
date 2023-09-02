@@ -14,7 +14,7 @@ The intent of this repository is to identify ways of alleviating pain points ass
             * [Controllers](./services/common/Distributed.Core/Controllers/) - Contains standardized base classes that simplify the creation of .NET Web API Controllers.
             * [Data](./services/common/Distributed.Core/Data/) - Contains classes that standardize Entity Framework Core interactions
             * [Extensions](./services/common/Distributed.Core/Extensions/) - Contains extensions that provide extended functinoality and standardized configuration
-            * [Graph](./services/common/Distributed.Core/Graph/) - Contains infrastructure that facilitates service-to-service HTTP communications through a publicly exposed subset of endpoints in an HTTP client service
+            * [Gateway](./services/common/Distributed.Core/Gateway/) - Contains infrastructure that facilitates service-to-service HTTP communications through a publicly exposed subset of endpoints in an HTTP client service
             * [Messages](./services/common/Distributed.Core/Messages/) - Contains classes that provide standardized message formats for return values
             * [Schema](./services/common/Distributed.Core/Schema/) - Contains classes and interfaces that simplify building entity models
             * [Sync](./services/common/Distributed.Core/Sync/) - Contains infrastructure that facilitates cross-service data synchronization via SignalR
