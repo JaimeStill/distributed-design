@@ -64,6 +64,11 @@ public static class ConfigurationExtensions
             builder.Configuration.GetRequiredSection(GatewayOptions.Gateway)
         );
 
+    public static string GetSyncEndpoint(IConfiguration config, string service) =>
+        config.GetRequiredSection("Sync")
+              .GetValue<string>(service)
+        ?? throw new Exception($"Sync Configuration: The requested Sync service {service} has not been configured");
+
     public static HubConnectionBuilder ConfigureJsonFormat(this HubConnectionBuilder builder) =>
         builder.AddJsonProtocol(SignalRJsonOptions);
 }

@@ -8,6 +8,16 @@ There are two APIs in the code base that facilitate cross-service interactions a
 
 * The [Sync API](./services/common/Distributed.Core/Sync/) enables SignalR-based services that define data synchronization endpoints that broadcast messages whenenver associated events occur. For instance, notification of whenever an entity is modified. It is the primary facilitator of the **Events** infrastructure outlined below.
 
+## Configuration - Options Pattern
+
+When you have a standardized JSON configuration pattern, you can implement the [Options Pattern](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-7.0) to simplify the process of reading configuration. This way, instead of injecting `IConfiguration` and trying to read the configuration directly, you can just inject the configuration directly.
+
+The **Gateway API** uses this pattern via the [`GatewayOptions`](./services/common/Distributed.Core/Gateway/GatewayOptions.cs) record and the [`ConfigureGatewayOptions`](./services/common/Distributed.Core/Extensions/ConfigurationExtensions.cs#L62) extension, as implemented in the [Proposals](./services/api/Distributed.Proposals.Api/Program.cs#L11) and [Workflows](./services/api/Distributed.Workflows.Api/Program.cs#L11) services.
+
+### Configuration - Sync
+
+Because the configuration pattern for the **Sync API** is not standard (the names of the services in the configuration section will differ depending on the service being configured), it cannot implemetn the Options pattern. Instead, a [`GetSyncEndpoint`](./services/common/Distributed.Core/Extensions/ConfigurationExtensions.cs#L67) extension method has been written against `IConfiguration` that standardizes the process of retrieving a Sync hub endpoint.
+
 ## Service Infrastructure Responsibilities
 
 This section defines a localized approach to defining service infrastructure inspired by the [Command Query Responsiblity Segregation (CQRS)](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-data-persistence/cqrs-pattern.html), [Event Sourcing](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-data-persistence/service-per-team.html), and [Saga](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-data-persistence/saga-pattern.html) patterns.

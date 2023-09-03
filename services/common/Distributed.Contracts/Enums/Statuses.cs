@@ -5,5 +5,7 @@ public enum Statuses
     Pending,
     Active,
     Inactive,
-    Removed
+    Rejected,
+    Removed,
+    Withdrawn
 }
