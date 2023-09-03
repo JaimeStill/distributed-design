@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Distributed.Core.Gateway;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -57,6 +58,11 @@ public static class ConfigurationExtensions
             .Services
             .AddSignalR()
             .AddJsonProtocol(SignalRJsonOptions);
+
+    public static void ConfigureGatewayOptions(this WebApplicationBuilder builder) =>
+        builder.Services.Configure<GatewayOptions>(
+            builder.Configuration.GetRequiredSection(GatewayOptions.Gateway)
+        );
 
     public static HubConnectionBuilder ConfigureJsonFormat(this HubConnectionBuilder builder) =>
         builder.AddJsonProtocol(SignalRJsonOptions);

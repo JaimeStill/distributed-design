@@ -8,6 +8,7 @@ builder.Services.ConfigureDbContext<WorkflowsContext>(
     "App"
 );
 
+builder.ConfigureGatewayOptions();
 builder.ConfigureCorsService();
 builder.ConfigureApiServices();
 builder.ConfigureSignalRServices();

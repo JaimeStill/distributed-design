@@ -8,6 +8,7 @@ builder.Services.ConfigureDbContext<ProposalsContext>(
     "App"
 );
 
+builder.ConfigureGatewayOptions();
 builder.ConfigureCorsService();
 builder.ConfigureApiServices();
 builder.ConfigureSignalRServices();

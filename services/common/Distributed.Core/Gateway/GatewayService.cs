@@ -1,22 +1,11 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Distributed.Core.Gateway;
 public class GatewayService
 {
-    readonly Gateway gateway;
+    readonly GatewayOptions gateway;
 
-    public GatewayService(IConfiguration config)
-    {
-        gateway = config
-            .GetSection("Gateway")
-            .Get<Gateway>()
-        ?? throw new Exception(
-            $"Invalid Gateway Configuration: configuration is missing or invalid. It must be provided when registering a Gateway service."
-        );
-    }
-
-    public GatewayService(Gateway gateway)
+    public GatewayService(GatewayOptions gateway)
     {
         this.gateway = gateway;
     }
