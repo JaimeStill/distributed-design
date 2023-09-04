@@ -41,20 +41,17 @@ This approach is important because it creates isolated boundaries around service
 
     * **Sagas** provide a single place for handling after-effects that do not require the same scrutiny (authentication / authorization) as **Commands**. They are private, internally managed mutations that facilitate recursive reactions across the whole data dependency hierarchy.
 
-## Service Class APIs
+## Service Class API Definition Order
 
-**Saga**
+**EventQuery** implementation
 
 ```cs
-public  class DataSaga  : EntitySaga<Data,DataContext>
+public class DataQuery : EntityQuery<Data, DataContext>
 {
-    public DataSaga(DataContext db) : base(db)
+    public DataQuery(DataContext db) : base(db)
     { }
 
-    public Task<ApiMessage<Data>> OnEvent(Data data)
-    {
-        // Respond to an event associated with Data
-    }
+    // query data specific to the Data entity
 }
 ```
 
@@ -74,6 +71,34 @@ public interface IDataEventHub : IEventHub<Data>
 ```cs
 public class DataEventHub : EventHub<Data, IDataEventHub>
 { }
+```
+
+**Command**
+
+```cs
+public class DataCommand : EntityCommand<Data, DataEventHub, IDataEventHub, DataContext>
+{
+    public DataCommand(DataContext db, IHubContext<DataEventHub, IDataEventHub> events)
+    : base(db, events)
+    { }
+
+    Func<Data, Task> SyncEvent => async (Data data) =>
+    {
+        EventMessage<Data> message = GenerateMessage(data, "event");
+
+        await events
+            .Clients
+            .All
+            .OnEvent(message);
+    };
+
+    public async Task<ApiMessage<Data>> Process(Data data)
+    {
+        // process data in some way
+        await SyncEvent(data);
+        // return
+    }
+}
 ```
 
 **IEventListener**
@@ -110,30 +135,30 @@ public class DataEventListener : EventListener<Data, DataSaga, DataContext>
 }
 ```
 
-**Command**
+**Saga**
 
 ```cs
-public class DataCommand : EntityCommand<Data,IDataEventHub,DataEventHub,DataContext>
+public  class DataSaga  : EntitySaga<Data,DataContext>
 {
-    public DataCommand(DataContext db, IHubContext<DataEventHub, IDataEventHub> events)
-    : base(db, events)
+    public DataSaga(DataContext db) : base(db)
     { }
 
-    Func<Data, Task> SyncEvent => async (Data data) =>
+    public Task<ApiMessage<Data>> OnEvent(Data data)
     {
-        EventMessage<Data> message = GenerateMessage(data, "event");
-
-        await events
-            .Clients
-            .All
-            .OnEvent(message);
-    };
-
-    public async Task<ApiMessage<Data>> Process(Data data)
-    {
-        // process data in some way
-        await SyncEvent(data);
-        // return
+        // Respond to an event associated with Data
     }
 }
 ```
+
+## Todo
+
+* Document EF Core Enum Configuration
+    * [ConfigureConventions](https://github.com/JaimeStill/DistributedDesign/commit/2f810160cfee4ac1bea68502f0f4a07aa0194ff1#diff-e58b26a4e69dee8a555436129fc258bc9cec011d337ba22e309d43792abf5a4c)
+    * [Status.OnSaving](https://github.com/JaimeStill/DistributedDesign/commit/2f810160cfee4ac1bea68502f0f4a07aa0194ff1#diff-f02680279535cf9c6ecd0c89c8dd992278da2b8962df776df4aecf5cc61e5332)
+* Document Service Registration
+    * [ServiceRegistrant](https://github.com/JaimeStill/DistributedDesign/commit/2f810160cfee4ac1bea68502f0f4a07aa0194ff1#diff-0a8486889f9e5b0cc4049b711e00a3bf21d3e4f88bf97b282e322104ac4d4bda)
+    * [AddAppServices](https://github.com/JaimeStill/DistributedDesign/commit/2f810160cfee4ac1bea68502f0f4a07aa0194ff1#diff-e131aa38cff2a77aaf59e4ac33a0f024ad35fe769aa5f582163800cbadfb2b1c)
+    * [Registrant](https://github.com/JaimeStill/DistributedDesign/commit/2f810160cfee4ac1bea68502f0f4a07aa0194ff1#diff-a4ff448e1728f82d577cbf54f1a90fe9bc545dd38b586922c19554f12b1785c7)
+* Document Entity Controller
+    * [EntityController](https://github.com/JaimeStill/DistributedDesign/commit/2f810160cfee4ac1bea68502f0f4a07aa0194ff1#diff-901a41bad148d5b20815b8d0e87dd0b2e4c2c084c180516834e50657baca023c)
+    * [ProposalController](https://github.com/JaimeStill/DistributedDesign/commit/2f810160cfee4ac1bea68502f0f4a07aa0194ff1#diff-12b8baaf39725801084ba0add78d1a0c3914f06c1ec72ce8f618133f43213610)
