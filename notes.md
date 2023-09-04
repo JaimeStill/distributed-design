@@ -112,6 +112,8 @@ public interface IDataEventListener : IEventListener<Data>
 
 **EventListener**
 
+Event listeners will be defined for every entity that requires a **Saga** and needs to react to data mutations that generated outside of the control of the service.
+
 ```cs
 public class DataEventListener : EventListener<Data, DataSaga, DataContext>
 {
@@ -136,6 +138,13 @@ public class DataEventListener : EventListener<Data, DataSaga, DataContext>
 ```
 
 **Saga**
+
+Sagas will typically be defined in services that either:
+
+1. Do not provide a direct interface to the entity and need to react to internal system changes affecting the entity
+2. Interface with a contract to an external service
+
+For instance, in the **Proposals** service in this repository, the only Saga defined will be for the `Package` and will simply check for when the `Package` has been completed through a `Workflow`. This way, it can generate the new `Status` for the `Proposal` based on the result of the `Workflow`.
 
 ```cs
 public  class DataSaga  : EntitySaga<Data,DataContext>
