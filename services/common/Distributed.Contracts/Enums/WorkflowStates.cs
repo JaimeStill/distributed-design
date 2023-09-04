@@ -1,5 +1,5 @@
 namespace Distributed.Contracts;
-public enum ProcessStates
+public enum WorkflowStates
 {
     Pending,
     Complete,

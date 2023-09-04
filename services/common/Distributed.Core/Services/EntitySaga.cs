@@ -1,4 +1,3 @@
-using Distributed.Core.Messages;
 using Distributed.Core.Schema;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,8 +11,4 @@ where Db : DbContext
     {
         this.db = db;
     }
-
-    public abstract Task<ApiMessage<T>> OnAdd(T entity);
-    public abstract Task<ApiMessage<T>> OnUpdate(T entity);
-    public abstract Task<ApiMessage<T>> OnRemove(T entity);
 }

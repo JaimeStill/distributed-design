@@ -24,6 +24,12 @@ public abstract class EntityContext<T> : DbContext where T : DbContext
             ((Entity)entry.Entity).OnSaving(entry.State);
     }
 
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<Enum>()
+            .HaveConversion<string>();
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(

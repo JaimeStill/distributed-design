@@ -2,7 +2,7 @@ using Distributed.Core.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace Distributed.Core.Services;
-public abstract class EntityQuery<T,Db> : IQuery<T,Db>
+public abstract class EntityQuery<T,Db> : IQuery<T>
 where T : Entity
 where Db : DbContext
 {

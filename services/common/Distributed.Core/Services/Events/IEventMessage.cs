@@ -1,5 +1,5 @@
-namespace Distributed.Core.Sync;
-public interface ISyncMessage<T>
+namespace Distributed.Core.Services;
+public interface IEventMessage<T>
 {
     public Guid Id { get; }
     public T Data { get; set; }

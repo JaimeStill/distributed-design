@@ -1,6 +1,8 @@
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Distributed.Core.Gateway;
+using Distributed.Core.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -64,11 +66,43 @@ public static class ConfigurationExtensions
             builder.Configuration.GetRequiredSection(GatewayOptions.Gateway)
         );
 
-    public static string GetSyncEndpoint(IConfiguration config, string service) =>
-        config.GetRequiredSection("Sync")
+    public static string GetEventEndpoint(IConfiguration config, string service) =>
+        config.GetRequiredSection("Events")
               .GetValue<string>(service)
-        ?? throw new Exception($"Sync Configuration: The requested Sync service {service} has not been configured");
+        ?? throw new Exception($"Event Configuration: The requested Event service {service} has not been configured");
 
     public static HubConnectionBuilder ConfigureJsonFormat(this HubConnectionBuilder builder) =>
         builder.AddJsonProtocol(SignalRJsonOptions);
+
+    public static void AddAppServices(this IServiceCollection services)
+    {
+        Assembly? entry = Assembly.GetEntryAssembly();
+
+        if (entry is not null)
+        {
+            IEnumerable<Assembly> assemblies = entry
+                .GetReferencedAssemblies()
+                .Select(Assembly.Load)
+                .Append(entry)
+                .Where(x =>
+                    x.GetTypes()
+                        .Any(IsValidServiceRegistrant)
+                );
+
+            IEnumerable<Type>? registrants = assemblies
+                .SelectMany(x =>
+                    x.GetTypes()
+                        .Where(IsValidServiceRegistrant)
+                );
+
+            if (registrants is not null)
+                foreach (Type registrant in registrants)
+                    ((ServiceRegistrant?)Activator.CreateInstance(registrant, services))?.Register();
+        }
+    }
+
+    static bool IsValidServiceRegistrant(this Type t) =>
+        t.IsClass
+        && !t.IsAbstract
+        && t.IsSubclassOf(typeof(ServiceRegistrant));
 }

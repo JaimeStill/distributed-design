@@ -7,5 +7,6 @@ namespace Distributed.Proposals.Schema;
 public class Proposal : Entity
 {
     public int StatusId { get; set; }
+    public int? PackageId { get; set; }
     public string Title { get; set; } = string.Empty;
 }

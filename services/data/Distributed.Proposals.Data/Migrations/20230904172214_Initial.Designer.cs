@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Distributed.Proposals.Data.Migrations
 {
     [DbContext(typeof(ProposalsContext))]
-    [Migration("20230901140206_Initial")]
+    [Migration("20230904172214_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -50,8 +50,9 @@ namespace Distributed.Proposals.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("State")
-                        .HasColumnType("int");
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Value")
                         .IsRequired()
@@ -75,6 +76,9 @@ namespace Distributed.Proposals.Data.Migrations
 
                     b.Property<DateTime>("DateModified")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("PackageId")
+                        .HasColumnType("int");
 
                     b.Property<int>("StatusId")
                         .HasColumnType("int");

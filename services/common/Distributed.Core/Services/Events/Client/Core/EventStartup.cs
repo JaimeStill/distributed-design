@@ -1,13 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Distributed.Core.Sync.Client;
-public abstract class SyncStartup<C,T> : BackgroundService
-where C : SyncClient<T>
+namespace Distributed.Core.Services;
+public abstract class EventStartup<C,T> : BackgroundService
+where C : EventClient<T>
 {
     private readonly IServiceProvider provider;
 
-    public SyncStartup(IServiceProvider provider)
+    public EventStartup(IServiceProvider provider)
     {
         this.provider = provider;
     }

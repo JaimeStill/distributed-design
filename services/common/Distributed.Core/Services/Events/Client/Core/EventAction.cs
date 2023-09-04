@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.SignalR.Client;
 
-namespace Distributed.Core.Sync.Client;
-public class SyncAction : IDisposable
+namespace Distributed.Core.Services;
+public class EventAction : IDisposable
 {
     private readonly string method;
     private readonly HubConnection client;
     private IDisposable? subscription;
 
-    public SyncAction(string method, HubConnection client)
+    public EventAction(string method, HubConnection client)
     {
         this.method = method;
         this.client = client;

@@ -6,7 +6,7 @@ There are two APIs in the code base that facilitate cross-service interactions a
 
 * The [Gateway API](./services/common/Distributed.Core/Gateway/) enables the registration of an `HttpClient`-based service for accessing a sub-set of interactions available on its corresponding service.
 
-* The [Sync API](./services/common/Distributed.Core/Sync/) enables SignalR-based services that define data synchronization endpoints that broadcast messages whenenver associated events occur. For instance, notification of whenever an entity is modified. It is the primary facilitator of the **Events** infrastructure outlined below.
+* The [Events API](./services/common/Distributed.Core/Services/Events) enables SignalR-based services that define data synchronization endpoints that broadcast messages whenenver associated events occur. For instance, notification of whenever an entity is modified.
 
 ## Configuration - Options Pattern
 
@@ -14,9 +14,9 @@ When you have a standardized JSON configuration pattern, you can implement the [
 
 The **Gateway API** uses this pattern via the [`GatewayOptions`](./services/common/Distributed.Core/Gateway/GatewayOptions.cs) record and the [`ConfigureGatewayOptions`](./services/common/Distributed.Core/Extensions/ConfigurationExtensions.cs#L62) extension, as implemented in the [Proposals](./services/api/Distributed.Proposals.Api/Program.cs#L11) and [Workflows](./services/api/Distributed.Workflows.Api/Program.cs#L11) services.
 
-### Configuration - Sync
+### Configuration - Events
 
-Because the configuration pattern for the **Sync API** is not standard (the names of the services in the configuration section will differ depending on the service being configured), it cannot implemetn the Options pattern. Instead, a [`GetSyncEndpoint`](./services/common/Distributed.Core/Extensions/ConfigurationExtensions.cs#L67) extension method has been written against `IConfiguration` that standardizes the process of retrieving a Sync hub endpoint.
+Because the configuration pattern for the **Events API** is not standard (the names of the services in the configuration section will differ depending on the service being configured), it cannot implement the Options pattern. Instead, a [`GetEventEndpoint`](./services/common/Distributed.Core/Extensions/ConfigurationExtensions.cs#L67) extension method has been written against `IConfiguration` that standardizes the process of retrieving an EventHub endpoint.
 
 ## Service Infrastructure Responsibilities
 
@@ -40,3 +40,100 @@ This approach is important because it creates isolated boundaries around service
     * **Commands** allow user-driven data mutations to be exposed without having to consider all of the after-effects that should occur as a result
 
     * **Sagas** provide a single place for handling after-effects that do not require the same scrutiny (authentication / authorization) as **Commands**. They are private, internally managed mutations that facilitate recursive reactions across the whole data dependency hierarchy.
+
+## Service Class APIs
+
+**Saga**
+
+```cs
+public  class DataSaga  : EntitySaga<Data,DataContext>
+{
+    public DataSaga(DataContext db) : base(db)
+    { }
+
+    public Task<ApiMessage<Data>> OnEvent(Data data)
+    {
+        // Respond to an event associated with Data
+    }
+}
+```
+
+**IEventHub**
+
+Defines the interface for the broadcast events available to the **EventHub**.
+
+```cs
+public interface IDataEventHub : IEventHub<Data>
+{
+    Task OnEvent(IEventMessage<T> message);
+}
+```
+
+**EventHub**
+
+```cs
+public class DataEventHub : EventHub<Data, IDataEventHub>
+{ }
+```
+
+**IEventListener**
+
+```cs
+public interface IDataEventListener : IEventListener<Data>
+{
+    EventAction OnEvent { get; }
+}
+```
+
+**EventListener**
+
+```cs
+public class DataEventListener : EventListener<Data, DataSaga, DataContext>
+{
+    readonly string EVENT_ENDPOINT = "Data";
+
+    public EventAction OnEvent { get; }
+
+    public DataEventListener(DataSaga saga, IConfiguration config)
+    : base(
+        saga,
+        config.GetEventEndpoint(EVENT_ENDPOINT)
+    )
+    {
+        OnEvent = new(nameof(OnEvent), connection);
+
+        OnEvent.Set<IEventMessage<Data>>(HandleEvent);
+    }
+
+    Task HandleEvent(IEventMessage<Data> message) =>
+        saga.OnEvent(message.Data);
+}
+```
+
+**Command**
+
+```cs
+public class DataCommand : EntityCommand<Data,IDataEventHub,DataEventHub,DataContext>
+{
+    public DataCommand(DataContext db, IHubContext<DataEventHub, IDataEventHub> events)
+    : base(db, events)
+    { }
+
+    Func<Data, Task> SyncEvent => async (Data data) =>
+    {
+        EventMessage<Data> message = GenerateMessage(data, "event");
+
+        await events
+            .Clients
+            .All
+            .OnEvent(message);
+    };
+
+    public async Task<ApiMessage<Data>> Process(Data data)
+    {
+        // process data in some way
+        await SyncEvent(data);
+        // return
+    }
+}
+```

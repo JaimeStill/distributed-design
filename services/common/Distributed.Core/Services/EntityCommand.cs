@@ -1,23 +1,23 @@
 using Distributed.Core.Messages;
 using Distributed.Core.Schema;
-using Distributed.Core.Sync;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Distributed.Core.Services;
-public abstract class EntityCommand<T,H,Db> : ICommand<T>
+public abstract class EntityCommand<T,THub,IHub,Db> : ICommand<T>
 where T : Entity
-where H : EntityEventHub<T>
+where THub : EventHub<T,IHub>
+where IHub : class, IEventHub<T>
 where Db : DbContext
 {
     protected readonly Db db;
-    protected readonly IHubContext<H,IEventHub<T>> sync;
+    protected readonly IHubContext<THub,IHub> events;
     protected DbSet<T> Set => db.Set<T>();
 
-    public EntityCommand(Db db, IHubContext<H,IEventHub<T>> sync)
+    public EntityCommand(Db db, IHubContext<THub,IHub> events)
     {
         this.db = db;
-        this.sync = sync;
+        this.events = events;
     }
 
     protected virtual Func<T, Task<T>>? OnAdd { get; set; }
@@ -25,16 +25,16 @@ where Db : DbContext
     protected virtual Func<T, Task<T>>? OnSave { get; set; }
     protected virtual Func<T, Task<T>>? OnRemove { get; set; }
 
-    protected virtual Func<T, Task>? AfterAdd { get; set; }
-    protected virtual Func<T, Task>? AfterUpdate { get; set; }
-    protected virtual Func<T, Task>? AfterSave { get; set; }
+    protected virtual Func<T, Task<T>>? AfterAdd { get; set; }
+    protected virtual Func<T, Task<T>>? AfterUpdate { get; set; }
+    protected virtual Func<T, Task<T>>? AfterSave { get; set; }
     protected virtual Func<T, Task>? AfterRemove { get; set; }
 
     Func<T, Task> SyncAdd => async (T entity) =>
     {
-        SyncMessage<T> message = GenerateMessage(entity, "created");
+        EventMessage<T> message = GenerateMessage(entity, "created");
 
-        await sync
+        await events
             .Clients
             .All
             .Add(message);
@@ -42,9 +42,9 @@ where Db : DbContext
 
     Func<T, Task> SyncUpdate => async (T entity) =>
     {
-        SyncMessage<T> message = GenerateMessage(entity, "updated");
+        EventMessage<T> message = GenerateMessage(entity, "updated");
 
-        await sync
+        await events
             .Clients
             .All
             .Update(message);
@@ -52,9 +52,9 @@ where Db : DbContext
 
     Func<T, Task> SyncRemove => async (T entity) =>
     {
-        SyncMessage<T> message = GenerateMessage(entity, "removed");
+        EventMessage<T> message = GenerateMessage(entity, "removed");
 
-        await sync
+        await events
             .Clients
             .All
             .Remove(message);
@@ -62,15 +62,15 @@ where Db : DbContext
 
     #region Internal
 
-    protected virtual void LogAction(ISyncMessage<T> message, string action) =>
+    protected virtual void LogAction(IEventMessage<T> message, string action) =>
         Console.WriteLine($"{action}: {message.Message}");
 
     protected virtual string SetMessage(T entity, string action) =>
         $"{typeof(T)} {entity.Value} successfully {action}";
 
-    protected SyncMessage<T> GenerateMessage(T entity, string action)
+    protected EventMessage<T> GenerateMessage(T entity, string action)
     {
-        SyncMessage<T> message = new(
+        EventMessage<T> message = new(
             entity,
             SetMessage(entity, action)
         );
@@ -91,7 +91,7 @@ where Db : DbContext
             await db.SaveChangesAsync();
 
             if (AfterAdd is not null)
-                await AfterAdd(entity);
+                entity = await AfterAdd(entity);
 
             await SyncAdd(entity);
 
@@ -114,7 +114,7 @@ where Db : DbContext
             await db.SaveChangesAsync();
 
             if (AfterUpdate is not null)
-                await AfterUpdate(entity);
+                entity = await AfterUpdate(entity);
 
             await SyncUpdate(entity);
 

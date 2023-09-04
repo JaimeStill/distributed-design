@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.SignalR;
 
-namespace Distributed.Core.Sync.Hub;
-public abstract class SyncHub<T, H> : Hub<H>
-where H : class, ISyncHub<T>
+namespace Distributed.Core.Services;
+public abstract class EventHub<T,THub> : Hub<THub>
+where THub : class, IEventHub<T>
 {
-    public void LogAction(ISyncMessage<T> message, string action) =>
+    public void LogAction(IEventMessage<T> message, string action) =>
         Console.WriteLine($"{action} message received: {message.Message}");
 
     public async Task Ping()

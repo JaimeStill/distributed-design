@@ -3,18 +3,18 @@ using Distributed.Core.Extensions;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Distributed.Core.Sync.Client;
-public abstract class SyncClient<T> : ISyncClient<T>
+namespace Distributed.Core.Services;
+public abstract class EventClient<T> : IEventClient<T>
 {
     protected readonly HubConnection connection;
     protected readonly string endpoint;
 
-    public SyncClientStatus Status => new(connection.ConnectionId, connection.State);
+    public EventClientStatus Status => new(connection.ConnectionId, connection.State);
 
-    public SyncAction OnPing { get; protected set; }
-    public SyncAction OnSync { get; protected set; }
+    public EventAction OnPing { get; protected set; }
+    public EventAction OnSync { get; protected set; }
 
-    public SyncClient(string endpoint)
+    public EventClient(string endpoint)
     {
         this.endpoint = endpoint;
 

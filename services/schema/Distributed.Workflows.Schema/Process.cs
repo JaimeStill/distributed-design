@@ -5,9 +5,9 @@ using Distributed.Core.Schema;
 namespace Distributed.Workflows.Schema;
 
 [Table("Process")]
-public class Process : Entity, IStateful<ProcessStates>
+public class Process : Entity
 {
     public int WorkflowId { get; set; }
-    public ProcessStates State { get; set; }
+    public ProcessActions? Action { get; set; }
     public string Description { get; set; } = string.Empty;
 }

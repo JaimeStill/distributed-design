@@ -1,12 +1,10 @@
-using Distributed.Core.Schema;
-using Distributed.Core.Sync;
-using Distributed.Core.Sync.Hub;
-
 namespace Distributed.Core.Services;
-public interface IEventHub<T> : ISyncHub<T>
-where T : Entity
+public interface IEventHub<T>
 {
-    Task Add(ISyncMessage<T> message);
-    Task Update(ISyncMessage<T> message);
-    Task Remove(ISyncMessage<T> message);
+    Task Ping();
+    Task Sync(IEventMessage<T> message);
+
+    Task Add(IEventMessage<T> message);
+    Task Update(IEventMessage<T> message);
+    Task Remove(IEventMessage<T> message);
 }
