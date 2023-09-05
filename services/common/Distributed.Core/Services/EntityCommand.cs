@@ -37,7 +37,7 @@ where Db : DbContext
         await events
             .Clients
             .All
-            .Add(message);
+            .OnAdd(message);
     };
 
     Func<T, Task> SyncUpdate => async (T entity) =>
@@ -47,7 +47,7 @@ where Db : DbContext
         await events
             .Clients
             .All
-            .Update(message);
+            .OnUpdate(message);
     };
 
     Func<T, Task> SyncRemove => async (T entity) =>
@@ -57,7 +57,7 @@ where Db : DbContext
         await events
             .Clients
             .All
-            .Remove(message);
+            .OnRemove(message);
     };
 
     #region Internal

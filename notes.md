@@ -114,6 +114,11 @@ public interface IDataEventListener : IEventListener<Data>
 
 Event listeners will be defined for every entity that requires a **Saga** and needs to react to data mutations that generated outside of the control of the service.
 
+You will only define an event listeners for entities that either:
+
+1. Do not provide a direct interface to the entity and need to react to internal system changes affecting the entity
+2. Interface with a contract to an external service
+
 ```cs
 public class DataEventListener : EventListener<Data, DataSaga, DataContext>
 {
@@ -139,7 +144,7 @@ public class DataEventListener : EventListener<Data, DataSaga, DataContext>
 
 **Saga**
 
-Sagas will typically be defined in services that either:
+Sagas will typically be defined in services for entities that either:
 
 1. Do not provide a direct interface to the entity and need to react to internal system changes affecting the entity
 2. Interface with a contract to an external service

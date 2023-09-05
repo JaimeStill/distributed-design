@@ -1,5 +1,6 @@
 using Distributed.Core.Extensions;
 using Distributed.Workflows.Data;
+using Distributed.Workflows.Logic;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,7 @@ builder.ConfigureCorsService();
 builder.ConfigureApiServices();
 builder.ConfigureSignalRServices();
 
+builder.Services.AddAppServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -20,6 +22,10 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseRouting();
+app.UseCors();
+
 app.MapControllers();
+app.MapHub<PackageEventHub>("/events/package");
 
 app.Run();

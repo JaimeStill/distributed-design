@@ -12,7 +12,11 @@ public abstract class GatewayClient
 
     protected bool Available => endpointId.HasValue;
 
-    public GatewayClient(GatewayService gateway, string name, JsonSerializerOptions? format)
+    public GatewayClient(
+        GatewayService gateway,
+        string name,
+        JsonSerializerOptions? format = null
+    )
     {
         endpoint = gateway.GetEndpoint(name);
         JsonFormat = format
