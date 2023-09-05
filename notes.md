@@ -176,3 +176,6 @@ public  class DataSaga  : EntitySaga<Data,DataContext>
 * Document Entity Controller
     * [EntityController](https://github.com/JaimeStill/DistributedDesign/commit/2f810160cfee4ac1bea68502f0f4a07aa0194ff1#diff-901a41bad148d5b20815b8d0e87dd0b2e4c2c084c180516834e50657baca023c)
     * [ProposalController](https://github.com/JaimeStill/DistributedDesign/commit/2f810160cfee4ac1bea68502f0f4a07aa0194ff1#diff-12b8baaf39725801084ba0add78d1a0c3914f06c1ec72ce8f618133f43213610)
+* Document Gateways
+    * [GatewayController](https://github.com/JaimeStill/DistributedDesign/commit/a3ee926215f7b622d61bbd318c9472527dd0e2ab#diff-fb66b69cd80f21669e29d225a9db5e857c30e72dc62108d2c8404c93f00dde0b)
+    * [GatewayClient](https://github.com/JaimeStill/DistributedDesign/commit/a3ee926215f7b622d61bbd318c9472527dd0e2ab#diff-191777f385f02c3d5d8cfd4b0e256c40f80d205282709d237968b26c3699ca72)
