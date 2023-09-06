@@ -73,7 +73,7 @@ public static class ConfigurationExtensions
         builder
             .Services
             .Configure<GatewayOptions>(
-                builder.Configuration.GetRequiredSection(GatewayOptions.Gateway)
+                builder.Configuration.GetSection(GatewayOptions.Gateway)
             );
 
     public static void AddGatewayService(this IServiceCollection services) =>

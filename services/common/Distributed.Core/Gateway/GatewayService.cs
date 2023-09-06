@@ -1,18 +1,20 @@
+using Microsoft.Extensions.Options;
+
 namespace Distributed.Core.Gateway;
 public class GatewayService
 {
-    readonly GatewayOptions gateway;
+    readonly IOptionsMonitor<GatewayOptions> gateway;
 
-    public GatewayService(GatewayOptions gateway)
+    public GatewayService(IOptionsMonitor<GatewayOptions> gateway)
     {
         this.gateway = gateway;
     }
 
-    public Guid GatewayId => gateway.Id;
-    public List<Endpoint> Endpoints => gateway.Endpoints;
+    public Guid GatewayId => gateway.CurrentValue.Id;
+    public List<Endpoint> Endpoints => gateway.CurrentValue.Endpoints;
 
     public Endpoint GetEndpoint(string name) =>
-        gateway.Endpoints.First(x =>
+        gateway.CurrentValue.Endpoints.First(x =>
             x.Name.ToLower() == name.ToLower()
         );
 }
