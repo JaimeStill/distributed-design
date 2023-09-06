@@ -14,6 +14,7 @@ builder.ConfigureCorsService();
 builder.ConfigureApiServices();
 builder.ConfigureSignalRServices();
 
+builder.Services.AddGatewayService();
 builder.Services.AddAppServices();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

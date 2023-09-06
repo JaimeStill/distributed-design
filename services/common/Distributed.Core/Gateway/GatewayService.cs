@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Distributed.Core.Gateway;
 public class GatewayService
 {
@@ -17,10 +15,4 @@ public class GatewayService
         gateway.Endpoints.First(x =>
             x.Name.ToLower() == name.ToLower()
         );
-}
-
-public static class GatewayRegistration
-{
-    public static void AddGatewayService(this IServiceCollection services) =>
-        services.AddSingleton<GatewayService>();
 }

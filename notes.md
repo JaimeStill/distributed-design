@@ -18,6 +18,30 @@ The **Gateway API** uses this pattern via the [`GatewayOptions`](./services/comm
 
 Because the configuration pattern for the **Events API** is not standard (the names of the services in the configuration section will differ depending on the service being configured), it cannot implement the Options pattern. Instead, a [`GetEventEndpoint`](./services/common/Distributed.Core/Extensions/ConfigurationExtensions.cs#L67) extension method has been written against `IConfiguration` that standardizes the process of retrieving an EventHub endpoint.
 
+## Global Enum String Conversion Configuration
+
+To simplify the storage and transport of [enum-based actions and states](./services/common/Distributed.Contracts/Enums/), [EntityContext](./services/common/Distributed.Core/Data/EntityContext.cs#L27) and [JsonSerializerOptions](./services/common/Distributed.Core/Extensions/ConfigurationExtensions.cs#L19) are globally configured to convert enums to and from strings.
+
+**EntityContext**
+
+```cs
+protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+{
+    configuretionBuilder.Properties<Enum>()
+        .HasConversion<string>();
+}
+```
+
+**JsonSerializerOptions**
+
+```cs
+public static JsonSerializerOptions ConfigureJsonOptions(JsonSerializerOptions options)
+{
+    options.Converters.Add(new JsonStringEnumConverter());
+    // other JsonSerializerOptions settings
+}
+```
+
 ## Service Infrastructure Responsibilities
 
 This section defines a localized approach to defining service infrastructure inspired by the [Command Query Responsiblity Segregation (CQRS)](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-data-persistence/cqrs-pattern.html), [Event Sourcing](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-data-persistence/service-per-team.html), and [Saga](https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-data-persistence/saga-pattern.html) patterns.
@@ -164,18 +188,269 @@ public  class DataSaga  : EntitySaga<Data,DataContext>
 }
 ```
 
-## Todo
+## Service Registration
 
-* Document EF Core Enum Configuration
-    * [ConfigureConventions](https://github.com/JaimeStill/DistributedDesign/commit/2f810160cfee4ac1bea68502f0f4a07aa0194ff1#diff-e58b26a4e69dee8a555436129fc258bc9cec011d337ba22e309d43792abf5a4c)
-    * [Status.OnSaving](https://github.com/JaimeStill/DistributedDesign/commit/2f810160cfee4ac1bea68502f0f4a07aa0194ff1#diff-f02680279535cf9c6ecd0c89c8dd992278da2b8962df776df4aecf5cc61e5332)
-* Document Service Registration
-    * [ServiceRegistrant](https://github.com/JaimeStill/DistributedDesign/commit/2f810160cfee4ac1bea68502f0f4a07aa0194ff1#diff-0a8486889f9e5b0cc4049b711e00a3bf21d3e4f88bf97b282e322104ac4d4bda)
-    * [AddAppServices](https://github.com/JaimeStill/DistributedDesign/commit/2f810160cfee4ac1bea68502f0f4a07aa0194ff1#diff-e131aa38cff2a77aaf59e4ac33a0f024ad35fe769aa5f582163800cbadfb2b1c)
-    * [Registrant](https://github.com/JaimeStill/DistributedDesign/commit/2f810160cfee4ac1bea68502f0f4a07aa0194ff1#diff-a4ff448e1728f82d577cbf54f1a90fe9bc545dd38b586922c19554f12b1785c7)
-* Document Entity Controller
-    * [EntityController](https://github.com/JaimeStill/DistributedDesign/commit/2f810160cfee4ac1bea68502f0f4a07aa0194ff1#diff-901a41bad148d5b20815b8d0e87dd0b2e4c2c084c180516834e50657baca023c)
-    * [ProposalController](https://github.com/JaimeStill/DistributedDesign/commit/2f810160cfee4ac1bea68502f0f4a07aa0194ff1#diff-12b8baaf39725801084ba0add78d1a0c3914f06c1ec72ce8f618133f43213610)
-* Document Gateways
-    * [GatewayController](https://github.com/JaimeStill/DistributedDesign/commit/a3ee926215f7b622d61bbd318c9472527dd0e2ab#diff-fb66b69cd80f21669e29d225a9db5e857c30e72dc62108d2c8404c93f00dde0b)
-    * [GatewayClient](https://github.com/JaimeStill/DistributedDesign/commit/a3ee926215f7b622d61bbd318c9472527dd0e2ab#diff-191777f385f02c3d5d8cfd4b0e256c40f80d205282709d237968b26c3699ca72)
+To keep API configuration clean and simplify the process of registering standard API services, instances of the [ServiceRegistrant](./services/common/Distributed.Core/Services/ServiceRegistrant.cs) class handle API service registration.
+
+The library defining API service classes will also define a [Registrant](./services/logic/Distributed.Workflows.Logic/Registrant.cs) that specifies how to register the services.
+
+```cs
+using Distributed.Core.Services;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Distributed.Workflows.Logic;
+public class Registrant : ServiceRegistrant
+{
+    public Registrant(IServiceCollection services) : base(services)
+    { }
+
+    public override void Register()
+    {
+        services.AddScoped<PackageQuery>();
+        services.AddScoped<PackageCommand>();
+
+        services.AddScoped<ProcessQuery>();
+        services.AddScoped<ProcessCommand>();
+
+        services.AddScoped<WorkflowQuery>();
+        services.AddScoped<WorkflowCommand>();
+
+        services.AddScoped<ProcessTemplateQuery>();
+        services.AddScoped<ProcessTemplateCommand>();
+
+        services.AddScoped<WorkflowTemplateQuery>();
+        services.AddScoped<WorkflowTemplateCommand>();
+    }
+}
+```
+
+In [Program.cs](./services/api/Distributed.Workflows.Api/Program.cs#L17), calling the [`AddAppServices()`](./services/common/Distributed.Core/Extensions/ConfigurationExtensions.cs) extension method will identify concrete instances of `ServiceRegistrant` and execute its `Register()` method.
+
+**AddAppServices**
+
+```cs
+public static void AddAppServices(this IServiceCollection services)
+{
+    Assembly? entry = Assembly.GetEntryAssembly();
+
+    if (entry is not null)
+    {
+        IEnumerable<Assembly> assemblies = entry
+            .GetReferencedAssemblies()
+            .Select(Assembly.Load)
+            .Append(entry)
+            .Where(x =>
+                x.GetTypes()
+                    .Any(IsValidServiceRegistrant)
+            );
+
+        IEnumerable<Type>? registrants = assemblies
+            .SelectMany(x =>
+                x.GetTypes()
+                    .Where(IsValidServiceRegistrant)
+            );
+
+        if (registrants is not null)
+            foreach (Type registrant in registrants)
+                ((ServiceRegistrant?)Activator.CreateInstance(registrant, services))?.Register();
+    }
+}
+```
+
+**Program.cs**
+
+```cs
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAppServices();
+```
+
+## Entity Controllers
+
+[`EntityController`](./services/common/Distributed.Core/Controllers/EntityController.cs) is an abstract Web API Controller that exposes standard `EntityQuery<T>` and `EntityCommand<T>` methods:
+
+```cs
+using Distributed.Core.Schema;
+using Distributed.Core.Services;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Distributed.Core.Controllers;
+public abstract class EntityController<T,TQuery,TCommand> : ApiController
+where T : Entity
+where TQuery : IQuery<T>
+where TCommand : ICommand<T>
+{
+    protected IQuery<T> baseQuery;
+    protected ICommand<T> baseCommand;
+
+    public EntityController(IQuery<T> query, ICommand<T> command)
+    {
+        baseQuery = query;
+        baseCommand = command;
+    }
+
+    [HttpGet("[action]")]
+    public virtual async Task<IActionResult> Get() =>
+        ApiResult(await baseQuery.Get());
+
+    [HttpGet("[action]/{id:int}")]
+    public virtual async Task<IActionResult> GetFromId([FromRoute]int id) =>
+        ApiResult(await baseQuery.GetById(id));
+
+    [HttpPost("[action]")]
+    public virtual async Task<IActionResult> ValidateValue([FromBody]T entity) =>
+        ApiResult(await baseCommand.ValidateValue(entity));
+
+    [HttpPost("[action]")]
+    public virtual async Task<IActionResult> Validate([FromBody]T entity) =>
+        ApiResult(await baseCommand.Validate(entity));
+
+    [HttpPost("[action]")]
+    public virtual async Task<IActionResult> Save([FromBody]T entity) =>
+        ApiResult(await baseCommand.Save(entity));
+
+    [HttpPost("[action]")]
+    public virtual async Task<IActionResult> Remove([FromBody]T entity) =>
+        ApiResult(await baseCommand.Remove(entity));
+}
+```
+
+Instances of `EntityController` just need to specify the generic types associated with the instance, inject the `Query` and `Command` services and pass them to `base`, and define any additional methods that need to be exposed:
+
+**ProposalController**
+
+```cs
+using Distributed.Core.Controllers;
+using Distributed.Proposals.Logic;
+using Distributed.Proposals.Schema;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Distributed.Proposals.Api.Controllers;
+
+[Route("api/[controller]")]
+public class ProposalController : EntityController<Proposal, ProposalQuery, ProposalCommand>
+{
+    readonly ProposalQuery query;
+
+    public ProposalController(ProposalQuery query, ProposalCommand command)
+    : base(query, command)
+    {
+        this.query = query;
+    }
+
+    [HttpGet("[action]/{id:int}")]
+    public async Task<IActionResult> GetStatus([FromRoute]int id) =>
+        ApiResult(await query.GetStatus(id));
+}
+```
+
+## Gateways
+
+A gateway represents a public interface into a service that facilitates cross-service interaction. The Gateway API provides infrastructure for defining the exposed Gateway and interfacing with the exposed Gateway.
+
+Common Gateway Infrastructure:
+
+* A [GatewayOptions](./services/common/Distributed.Core/Gateway/GatewayOptions.cs) Options pattern record for structuring Gateway configuration metadata. At a minimum, `Gateway.Id` must be provided.
+    * Gateway configuration is defined in [`appsettings`](./services/api/Distributed.Workflows.Api/appsettings.Development.json).
+* A [GatewayService](./services/common/Distributed.Core/Gateway/GatewayService.cs) class that exposes gateway configuration information.
+
+Defining Gateway Infrastructure:
+
+* An abstract [Controller](./services/common/Distributed.Core/Gateway/GatewayControllerBase.cs) that exposes public interface for the service.
+
+Interfacing Gateway Infrastructure:
+
+* An abstract [GatewayClient](./services/common/Distributed.Core/Gateway/GatewayClient.cs) HTTP service that defines client calls to Gateway controller endpoints.
+
+### Implementing a Gateway
+
+The **Workflows** service defines a [`GatewayController`](./services/api/Distributed.Workflows.Api/Controllers/GatewayController.cs) that allows interactions from external services through the [`Package`](./services/common/Distributed.Contracts/Classes/Package.cs) contract entity.
+
+```cs
+using Distributed.Contracts;
+using Distributed.Core.Gateway;
+using Distributed.Workflows.Logic;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Distributed.Workflows.Api.Controllers;
+public class GatewayController : GatewayControllerBase
+{
+    readonly PackageQuery packageQuery;
+    readonly PackageCommand packageCommand;
+
+    public GatewayController(
+        GatewayService gateway,
+        PackageQuery packageQuery,
+        PackageCommand packageCommand
+    )
+    : base(gateway)
+    {
+        this.packageQuery = packageQuery;
+        this.packageCommand = packageCommand;
+    }
+
+    [HttpGet("[action]/{id:int}/{type}")]
+    public async Task<IActionResult> GetPackage(
+        [FromRoute] int id,
+        [FromRoute] string type
+    ) => ApiResult(await packageQuery.GetByEntity(id, type));
+
+    [HttpPost("[action]")]
+    public async Task<IActionResult> ValidatePackage([FromBody] Package package) =>
+        ApiResult(await packageCommand.Validate(package));
+
+    [HttpPost("[action]")]
+    public async Task<IActionResult> SubmitPackage([FromBody] Package package) =>
+        ApiResult(await packageCommand.Save(package));
+
+    [HttpPost("[action]")]
+    public async Task<IActionResult> WithdrawPackage([FromBody] Package package) =>
+        ApiResult(await packageCommand.Remove(package));
+}
+```
+
+To provide external access to this API, a `GatewayClient` instance is defined at [`./services/common/Distributed.Contracts/Gateways/WorkflowsGateway.cs`](./services/common/Distributed.Contracts/Gateways/WorkflowsGateway.cs):
+
+```cs
+using Distributed.Core.Gateway;
+using Distributed.Core.Messages;
+
+namespace Distributed.Contracts.Gateways;
+public class WorkflowsGateway : GatewayClient
+{
+    public WorkflowsGateway(GatewayService gateway)
+    : base(gateway, "Workflows")
+    { }
+
+    public async Task<Package?> GetPackage(int id, string type) =>
+        await Get<Package?>($"getPackage/{id}/{type}");
+
+    public async Task<ValidationMessage?> ValidatePackage(Package package) =>
+        await Post<ValidationMessage, Package>(package, "validatePackage");
+
+    public async Task<ApiMessage<Package>?> SubmitPackage(Package package) =>
+        await Post<ApiMessage<Package>, Package>(package, "submitPackage");
+
+    public async Task<ApiMessage<int>?> WithdrawPackage(Package package) =>
+        await Delete<ApiMessage<int>, Package>(package, "withdrawPackage");
+}
+```
+
+Gateway clients can be registered by interfacing services by defining a [`Registrant`](./services/api/Distributed.Proposals.Api/Registrant.cs) that registers all `GatewayClient` services:
+
+```cs
+using Distributed.Contracts.Gateways;
+using Distributed.Core.Services;
+
+namespace Distributed.Proposals.Api;
+public class Registrant : ServiceRegistrant
+{
+    public Registrant(IServiceCollection services) : base(services)
+    { }
+
+    public override void Register()
+    {
+        services.AddSingleton<WorkflowsGateway>();
+    }
+}
+```

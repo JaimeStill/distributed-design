@@ -61,11 +61,6 @@ public static class ConfigurationExtensions
             .AddSignalR()
             .AddJsonProtocol(SignalRJsonOptions);
 
-    public static void ConfigureGatewayOptions(this WebApplicationBuilder builder) =>
-        builder.Services.Configure<GatewayOptions>(
-            builder.Configuration.GetRequiredSection(GatewayOptions.Gateway)
-        );
-
     public static string GetEventEndpoint(IConfiguration config, string service) =>
         config.GetRequiredSection("Events")
               .GetValue<string>(service)
@@ -73,6 +68,16 @@ public static class ConfigurationExtensions
 
     public static HubConnectionBuilder ConfigureJsonFormat(this HubConnectionBuilder builder) =>
         builder.AddJsonProtocol(SignalRJsonOptions);
+
+    public static void ConfigureGatewayOptions(this WebApplicationBuilder builder) =>
+        builder
+            .Services
+            .Configure<GatewayOptions>(
+                builder.Configuration.GetRequiredSection(GatewayOptions.Gateway)
+            );
+
+    public static void AddGatewayService(this IServiceCollection services) =>
+        services.AddSingleton<GatewayService>();
 
     public static void AddAppServices(this IServiceCollection services)
     {
