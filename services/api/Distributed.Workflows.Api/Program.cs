@@ -27,5 +27,9 @@ app.UseCors();
 
 app.MapControllers();
 app.MapHub<PackageEventHub>("/events/package");
+app.MapHub<ProcessEventHub>("/events/process");
+app.MapHub<ProcessTemplateEventHub>("/events/processTemplate");
+app.MapHub<WorkflowEventHub>("/events/workflow");
+app.MapHub<WorkflowTemplateEventHub>("/events/workflowTemplate");
 
 app.Run();
