@@ -8,6 +8,7 @@ namespace Distributed.Workflows.Schema;
 public class Process : Entity
 {
     public int WorkflowId { get; set; }
+    public int Index { get; set; }
     public ProcessActions? Action { get; set; }
     public string Description { get; set; } = string.Empty;
 }
