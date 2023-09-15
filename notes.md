@@ -18,14 +18,6 @@ docker build -t workflows-api -f ./api/Workflows.Api/Dockerfile .
 docker run -it --rm -p 5002:80 workflows-api
 ```
 
-## Supporting Service Infrastructure
-
-There are two APIs in the code base that facilitate cross-service interactions and synchronization:
-
-* The [Gateway API](./nodes/common/Distributed.Core/Gateway/) enables the registration of an `HttpClient`-based service for accessing a sub-set of interactions available on its corresponding service.
-
-* The [Events API](./nodes/common/Distributed.Core/Services/Events) enables SignalR-based services that define data synchronization endpoints that broadcast messages whenenver associated events occur. For instance, notification of whenever an entity is modified.
-
 ## Configuration - Options Pattern
 
 When you have a standardized JSON configuration pattern, you can implement the [Options Pattern](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-7.0) to simplify the process of reading configuration. This way, instead of injecting `IConfiguration` and trying to read the configuration directly, you can just inject the configuration directly.
