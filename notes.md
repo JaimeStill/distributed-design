@@ -9,12 +9,12 @@
 ## Docker
 
 ```bash
-# Proposals API - Run from ./services
+# Proposals API - Run from ./nodes
 docker build -t proposals-api -f ./api/Distributed.Proposals.Api/Dockerfile .
 docker run -it --rm -p 5001:80 propsals-api
 
-# Workflows API - Run from ./services
-docker build -t workflows-api -f ./api/Distributed.Workflows.Api/Dockerfile .
+# Workflows API - Run from ./nodes
+docker build -t workflows-api -f ./api/Workflows.Api/Dockerfile .
 docker run -it --rm -p 5002:80 workflows-api
 ```
 
@@ -22,23 +22,23 @@ docker run -it --rm -p 5002:80 workflows-api
 
 There are two APIs in the code base that facilitate cross-service interactions and synchronization:
 
-* The [Gateway API](./services/common/Distributed.Core/Gateway/) enables the registration of an `HttpClient`-based service for accessing a sub-set of interactions available on its corresponding service.
+* The [Gateway API](./nodes/common/Distributed.Core/Gateway/) enables the registration of an `HttpClient`-based service for accessing a sub-set of interactions available on its corresponding service.
 
-* The [Events API](./services/common/Distributed.Core/Services/Events) enables SignalR-based services that define data synchronization endpoints that broadcast messages whenenver associated events occur. For instance, notification of whenever an entity is modified.
+* The [Events API](./nodes/common/Distributed.Core/Services/Events) enables SignalR-based services that define data synchronization endpoints that broadcast messages whenenver associated events occur. For instance, notification of whenever an entity is modified.
 
 ## Configuration - Options Pattern
 
 When you have a standardized JSON configuration pattern, you can implement the [Options Pattern](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-7.0) to simplify the process of reading configuration. This way, instead of injecting `IConfiguration` and trying to read the configuration directly, you can just inject the configuration directly.
 
-The **Gateway API** uses this pattern via the [`GatewayOptions`](./services/common/Distributed.Core/Gateway/GatewayOptions.cs) record and the [`ConfigureGatewayOptions`](./services/common/Distributed.Core/Extensions/ConfigurationExtensions.cs#L62) extension, as implemented in the [Proposals](./services/api/Distributed.Proposals.Api/Program.cs#L11) and [Workflows](./services/api/Distributed.Workflows.Api/Program.cs#L11) services.
+The **Gateway API** uses this pattern via the [`GatewayOptions`](./nodes/common/Distributed.Core/Gateway/GatewayOptions.cs) record and the [`ConfigureGatewayOptions`](./nodes/common/Distributed.Core/Extensions/ConfigurationExtensions.cs#L62) extension, as implemented in the [Proposals](./nodes/api/Distributed.Proposals.Api/Program.cs#L11) and [Workflows](./nodes/api/Workflows.Api/Program.cs#L11) services.
 
 ### Configuration - Events
 
-Because the configuration pattern for the **Events API** is not standard (the names of the services in the configuration section will differ depending on the service being configured), it cannot implement the Options pattern. Instead, a [`GetEventEndpoint`](./services/common/Distributed.Core/Extensions/ConfigurationExtensions.cs#L67) extension method has been written against `IConfiguration` that standardizes the process of retrieving an EventHub endpoint.
+Because the configuration pattern for the **Events API** is not standard (the names of the services in the configuration section will differ depending on the service being configured), it cannot implement the Options pattern. Instead, a [`GetEventEndpoint`](./nodes/common/Distributed.Core/Extensions/ConfigurationExtensions.cs#L67) extension method has been written against `IConfiguration` that standardizes the process of retrieving an EventHub endpoint.
 
 ## Global Enum String Conversion Configuration
 
-To simplify the storage and transport of [enum-based actions and states](./services/common/Distributed.Contracts/Enums/), [EntityContext](./services/common/Distributed.Core/Data/EntityContext.cs#L27) and [JsonSerializerOptions](./services/common/Distributed.Core/Extensions/ConfigurationExtensions.cs#L19) are globally configured to convert enums to and from strings.
+To simplify the storage and transport of [enum-based actions and states](./nodes/common/Distributed.Contracts/Enums/), [EntityContext](./nodes/common/Distributed.Core/Data/EntityContext.cs#L27) and [JsonSerializerOptions](./nodes/common/Distributed.Core/Extensions/ConfigurationExtensions.cs#L19) are globally configured to convert enums to and from strings.
 
 **EntityContext**
 
@@ -66,13 +66,13 @@ This section defines a localized approach to defining service infrastructure ins
 
 The following terms are used to break what is the traditional role of API-based services into smaller, more focused responsiblities:
 
-* [**Queries**](./services/common/Distributed.Core/Services/EntityQuery.cs) - Data retrieval methods; represented by the standard data accessors from traditional API services.
+* [**Queries**](./nodes/common/Distributed.Core/Services/EntityQuery.cs) - Data retrieval methods; represented by the standard data accessors from traditional API services.
 
-* [**Commands**](./services/common/Distributed.Core/Services/EntityCommand.cs) - User-based, public data mutation methods; represented by the standard **Save** and **Delete** methods of API services.
+* [**Commands**](./nodes/common/Distributed.Core/Services/EntityCommand.cs) - User-based, public data mutation methods; represented by the standard **Save** and **Delete** methods of API services.
 
-* [**Sagas**](./services/common/Distributed.Core/Services/EntitySaga.cs) - System-based, private data mutation methods; they isolate reactionary logic for determining how to handle effects of mutations triggered through **Events**. The **Saga** should only be concerned with the data encapsulated in the service that defines it. All services should be self-sufficient with reacting to events.
+* [**Sagas**](./nodes/common/Distributed.Core/Services/EntitySaga.cs) - System-based, private data mutation methods; they isolate reactionary logic for determining how to handle effects of mutations triggered through **Events**. The **Saga** should only be concerned with the data encapsulated in the service that defines it. All services should be self-sufficient with reacting to events.
 
-* [**Events**](./services/common/Distributed.Core/Services/Events/) - Events are comprised of two components: the [EventHub](./services/common/Distributed.Core/Services/Events/Hub/EntityEventHub.cs) which is used to broadcast when data has been mutated, and the [EventListener](./services/common/Distributed.Core/Services/Events/Client/EntityEventListener.cs) which is used to execute corresponding **Saga** methods to handle the follow on effects of the data mutation. **EventHubs** are injected into **Commands** and broadcast messages within *Sync{x}* events on the **Command** service.
+* [**Events**](./nodes/common/Distributed.Core/Services/Events/) - Events are comprised of two components: the [EventHub](./nodes/common/Distributed.Core/Services/Events/Hub/EntityEventHub.cs) which is used to broadcast when data has been mutated, and the [EventListener](./nodes/common/Distributed.Core/Services/Events/Client/EntityEventListener.cs) which is used to execute corresponding **Saga** methods to handle the follow on effects of the data mutation. **EventHubs** are injected into **Commands** and broadcast messages within *Sync{x}* events on the **Command** service.
 
 This approach is important because it creates isolated boundaries around service responsiblities:
 * All data retrieval concerns associated with a specific data type can be shared across the system without worrying about exposing data manipulation logic.
@@ -208,15 +208,15 @@ public  class DataSaga  : EntitySaga<Data,DataContext>
 
 ## Service Registration
 
-To keep API configuration clean and simplify the process of registering standard API services, instances of the [ServiceRegistrant](./services/common/Distributed.Core/Services/ServiceRegistrant.cs) class handle API service registration.
+To keep API configuration clean and simplify the process of registering standard API services, instances of the [ServiceRegistrant](./nodes/common/Distributed.Core/Services/ServiceRegistrant.cs) class handle API service registration.
 
-The library defining API service classes will also define a [Registrant](./services/logic/Distributed.Workflows.Logic/Registrant.cs) that specifies how to register the services.
+The library defining API service classes will also define a [Registrant](./nodes/logic/Workflows.Services/Registrant.cs) that specifies how to register the services.
 
 ```cs
 using Distributed.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Distributed.Workflows.Logic;
+namespace Workflows.Services;
 public class Registrant : ServiceRegistrant
 {
     public Registrant(IServiceCollection services) : base(services)
@@ -242,7 +242,7 @@ public class Registrant : ServiceRegistrant
 }
 ```
 
-In [Program.cs](./services/api/Distributed.Workflows.Api/Program.cs#L17), calling the [`AddAppServices()`](./services/common/Distributed.Core/Extensions/ConfigurationExtensions.cs) extension method will identify concrete instances of `ServiceRegistrant` and execute its `Register()` method.
+In [Program.cs](./nodes/api/Workflows.Api/Program.cs#L17), calling the [`AddAppServices()`](./nodes/common/Distributed.Core/Extensions/ConfigurationExtensions.cs) extension method will identify concrete instances of `ServiceRegistrant` and execute its `Register()` method.
 
 **AddAppServices**
 
@@ -285,10 +285,10 @@ builder.Services.AddAppServices();
 
 ## Entity Controllers
 
-[`EntityController`](./services/common/Distributed.Core/Controllers/EntityController.cs) is an abstract Web API Controller that exposes standard `EntityQuery<T>` and `EntityCommand<T>` methods:
+[`EntityController`](./nodes/common/Distributed.Core/Controllers/EntityController.cs) is an abstract Web API Controller that exposes standard `EntityQuery<T>` and `EntityCommand<T>` methods:
 
 ```cs
-using Distributed.Core.Schema;
+using Distributed.Core.Entities;
 using Distributed.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -368,29 +368,29 @@ A gateway represents a public interface into a service that facilitates cross-se
 
 Common Gateway Infrastructure:
 
-* A [GatewayOptions](./services/common/Distributed.Core/Gateway/GatewayOptions.cs) Options pattern record for structuring Gateway configuration metadata. At a minimum, `Gateway.Id` must be provided.
-    * Gateway configuration is defined in [`appsettings`](./services/api/Distributed.Workflows.Api/appsettings.Development.json).
-* A [GatewayService](./services/common/Distributed.Core/Gateway/GatewayService.cs) class that exposes gateway configuration information.
+* A [GatewayOptions](./nodes/common/Distributed.Core/Gateway/GatewayOptions.cs) Options pattern record for structuring Gateway configuration metadata. At a minimum, `Gateway.Id` must be provided.
+    * Gateway configuration is defined in [`appsettings`](./nodes/api/Workflows.Api/appsettings.Development.json).
+* A [GatewayService](./nodes/common/Distributed.Core/Gateway/GatewayService.cs) class that exposes gateway configuration information.
 
 Defining Gateway Infrastructure:
 
-* An abstract [Controller](./services/common/Distributed.Core/Gateway/GatewayControllerBase.cs) that exposes public interface for the service.
+* An abstract [Controller](./nodes/common/Distributed.Core/Gateway/GatewayControllerBase.cs) that exposes public interface for the service.
 
 Interfacing Gateway Infrastructure:
 
-* An abstract [GatewayClient](./services/common/Distributed.Core/Gateway/GatewayClient.cs) HTTP service that defines client calls to Gateway controller endpoints.
+* An abstract [GatewayClient](./nodes/common/Distributed.Core/Gateway/GatewayClient.cs) HTTP service that defines client calls to Gateway controller endpoints.
 
 ### Implementing a Gateway
 
-The **Workflows** service defines a [`GatewayController`](./services/api/Distributed.Workflows.Api/Controllers/GatewayController.cs) that allows interactions from external services through the [`Package`](./services/common/Distributed.Contracts/Classes/Package.cs) contract entity.
+The **Workflows** service defines a [`GatewayController`](./nodes/api/Workflows.Api/Controllers/GatewayController.cs) that allows interactions from external services through the [`Package`](./nodes/common/Distributed.Contracts/Classes/Package.cs) contract entity.
 
 ```cs
 using Distributed.Contracts;
 using Distributed.Core.Gateway;
-using Distributed.Workflows.Logic;
+using Workflows.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Distributed.Workflows.Api.Controllers;
+namespace Workflows.Api.Controllers;
 public class GatewayController : GatewayControllerBase
 {
     readonly PackageQuery packageQuery;
@@ -427,7 +427,7 @@ public class GatewayController : GatewayControllerBase
 }
 ```
 
-To provide external access to this API, a `GatewayClient` instance is defined at [`./services/common/Distributed.Contracts/Gateways/WorkflowsGateway.cs`](./services/common/Distributed.Contracts/Gateways/WorkflowsGateway.cs):
+To provide external access to this API, a `GatewayClient` instance is defined at [`./nodes/common/Distributed.Contracts/Gateways/WorkflowsGateway.cs`](./nodes/common/Distributed.Contracts/Gateways/WorkflowsGateway.cs):
 
 ```cs
 using Distributed.Core.Gateway;
@@ -454,7 +454,7 @@ public class WorkflowsGateway : GatewayClient
 }
 ```
 
-Gateway clients can be registered by interfacing services by defining a [`Registrant`](./services/api/Distributed.Proposals.Api/Registrant.cs) that registers all `GatewayClient` services:
+Gateway clients can be registered by interfacing services by defining a [`Registrant`](./nodes/api/Distributed.Proposals.Api/Registrant.cs) that registers all `GatewayClient` services:
 
 ```cs
 using Distributed.Contracts.Gateways;

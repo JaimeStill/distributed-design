@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\contracts\core\Distributed.Contracts.csproj" />
+    <ProjectReference Include="..\..\core\Distributed.Core.csproj" />
+    <ProjectReference Include="..\Proposals.Data\Proposals.Data.csproj" />
+    <ProjectReference Include="..\Proposals.Entities\Proposals.Entities.csproj" />
+  </ItemGroup>
+
+</Project>
