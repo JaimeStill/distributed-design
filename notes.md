@@ -1,5 +1,23 @@
 # Notes
 
+## Todo
+
+* JsonExceptionHandler Middleware
+* Docker
+* Command Hooks and Transactions
+
+## Docker
+
+```bash
+# Proposals API - Run from ./services
+docker build -t proposals-api -f ./api/Distributed.Proposals.Api/Dockerfile .
+docker run -it --rm -p 5001:80 propsals-api
+
+# Workflows API - Run from ./services
+docker build -t workflows-api -f ./api/Distributed.Workflows.Api/Dockerfile .
+docker run -it --rm -p 5002:80 workflows-api
+```
+
 ## Supporting Service Infrastructure
 
 There are two APIs in the code base that facilitate cross-service interactions and synchronization:

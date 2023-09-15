@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Distributed.Core.Extensions;
-public static class ConfigurationExtensions
+public static class ServiceExtensions
 {
     public static JsonSerializerOptions ConfigureJsonOptions(JsonSerializerOptions options)
     {

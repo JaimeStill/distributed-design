@@ -14,17 +14,24 @@ public class ProposalCommand : EntityCommand<Proposal, ProposalEventHub, IPropos
     : base(db, events)
     { }
 
-    protected override Func<Proposal, Task<Proposal>>? AfterAdd => async (Proposal proposal) =>
+    protected override Func<Proposal, Task<HookMessage<Proposal>>>? AfterAdd => async (Proposal proposal) =>
     {
-        Status status = proposal.GenerateCreatedStatus();
-        await db.Statuses.AddAsync(status);
-        await db.SaveChangesAsync();
+        try
+        {
+            Status status = proposal.GenerateCreatedStatus();
+            await db.Statuses.AddAsync(status);
+            await db.SaveChangesAsync();
 
-        Set.Attach(proposal);
-        proposal.StatusId = status.Id;
-        await db.SaveChangesAsync();
+            Set.Attach(proposal);
+            proposal.StatusId = status.Id;
+            await db.SaveChangesAsync();
 
-        return proposal;
+            return new(proposal);
+        }
+        catch (Exception ex)
+        {
+            return new(proposal, ex);
+        }
     };
 
     async Task<bool> ValidateStatus(Proposal proposal) =>

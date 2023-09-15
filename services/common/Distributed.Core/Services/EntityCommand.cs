@@ -2,33 +2,44 @@ using Distributed.Core.Messages;
 using Distributed.Core.Schema;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Distributed.Core.Services;
-public abstract class EntityCommand<T,THub,IHub,Db> : ICommand<T>
+public abstract class EntityCommand<T, THub, IHub, Db> : ICommand<T>
 where T : Entity
-where THub : EventHub<T,IHub>
+where THub : EventHub<T, IHub>
 where IHub : class, IEventHub<T>
 where Db : DbContext
 {
     protected readonly Db db;
-    protected readonly IHubContext<THub,IHub> events;
+    protected readonly IHubContext<THub, IHub> events;
     protected DbSet<T> Set => db.Set<T>();
 
-    public EntityCommand(Db db, IHubContext<THub,IHub> events)
+    public EntityCommand(Db db, IHubContext<THub, IHub> events)
     {
         this.db = db;
         this.events = events;
     }
 
-    protected virtual Func<T, Task<T>>? OnAdd { get; set; }
-    protected virtual Func<T, Task<T>>? OnUpdate { get; set; }
-    protected virtual Func<T, Task<T>>? OnSave { get; set; }
-    protected virtual Func<T, Task<T>>? OnRemove { get; set; }
+    protected async Task<T> HandleHook(T entity, Func<T, Task<HookMessage<T>>> hook)
+    {
+        HookMessage<T> result = await hook(entity);
 
-    protected virtual Func<T, Task<T>>? AfterAdd { get; set; }
-    protected virtual Func<T, Task<T>>? AfterUpdate { get; set; }
-    protected virtual Func<T, Task<T>>? AfterSave { get; set; }
-    protected virtual Func<T, Task>? AfterRemove { get; set; }
+        if (result.Exception is not null)
+            throw result.Exception;
+
+        return result.Value;
+    }
+
+    protected virtual Func<T, Task<HookMessage<T>>>? OnAdd { get; set; }
+    protected virtual Func<T, Task<HookMessage<T>>>? OnUpdate { get; set; }
+    protected virtual Func<T, Task<HookMessage<T>>>? OnSave { get; set; }
+    protected virtual Func<T, Task<HookMessage<T>>>? OnRemove { get; set; }
+
+    protected virtual Func<T, Task<HookMessage<T>>>? AfterAdd { get; set; }
+    protected virtual Func<T, Task<HookMessage<T>>>? AfterUpdate { get; set; }
+    protected virtual Func<T, Task<HookMessage<T>>>? AfterSave { get; set; }
+    protected virtual Func<T, Task<HookMessage<T>>>? AfterRemove { get; set; }
 
     Func<T, Task> SyncAdd => async (T entity) =>
     {
@@ -85,17 +96,17 @@ where Db : DbContext
         try
         {
             if (OnAdd is not null)
-                entity = await OnAdd(entity);
+                entity = await HandleHook(entity, OnAdd);
 
             await db.Set<T>().AddAsync(entity);
             await db.SaveChangesAsync();
 
             if (AfterAdd is not null)
-                entity = await AfterAdd(entity);
+                entity = await HandleHook(entity, AfterAdd);
 
             await SyncAdd(entity);
 
-            return new (entity, $"{typeof(T)} successfully added");
+            return new(entity, $"{typeof(T)} successfully added");
         }
         catch (Exception ex)
         {
@@ -108,13 +119,13 @@ where Db : DbContext
         try
         {
             if (OnUpdate is not null)
-                entity = await OnUpdate(entity);
+                entity = await HandleHook(entity, OnUpdate);
 
             db.Set<T>().Update(entity);
             await db.SaveChangesAsync();
 
             if (AfterUpdate is not null)
-                entity = await AfterUpdate(entity);
+                entity = await HandleHook(entity, AfterUpdate);
 
             await SyncUpdate(entity);
 
@@ -156,17 +167,27 @@ where Db : DbContext
 
         if (validity.IsValid)
         {
-            if (OnSave is not null)
-                entity = await OnSave(entity);
+            using IDbContextTransaction transaction = await db.Database.BeginTransactionAsync();
 
-            ApiMessage<T> result = entity.Id > 0
-                ? await Update(entity)
-                : await Add(entity);
+            try
+            {
+                if (OnSave is not null)
+                    entity = await HandleHook(entity, OnSave);
 
-            if (AfterSave is not null)
-                await AfterSave(entity);
+                ApiMessage<T> result = entity.Id > 0
+                    ? await Update(entity)
+                    : await Add(entity);
 
-            return result;
+                if (AfterSave is not null)
+                    entity = await HandleHook(entity, AfterSave);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return new("Save", ex);
+            }
         }
         else
             return new(validity);
@@ -174,10 +195,12 @@ where Db : DbContext
 
     public async Task<ApiMessage<int>> Remove(T entity)
     {
+        using IDbContextTransaction transaction = await db.Database.BeginTransactionAsync();
+
         try
         {
             if (OnRemove is not null)
-                entity = await OnRemove(entity);
+                entity = await HandleHook(entity, OnRemove);
 
             db.Set<T>().Remove(entity);
 
@@ -186,17 +209,21 @@ where Db : DbContext
             if (result > 0)
             {
                 if (AfterRemove is not null)
-                    await AfterRemove(entity);
+                    entity = await HandleHook(entity, AfterRemove);
 
                 await SyncRemove(entity);
 
                 return new(entity.Id, $"{typeof(T)} successfully removed");
             }
             else
+            {
+                await transaction.RollbackAsync();
                 return new("Remove", new Exception("The operation was not successful"));
+            }
         }
         catch (Exception ex)
         {
+            await transaction.RollbackAsync();
             return new("Remove", ex);
         }
     }

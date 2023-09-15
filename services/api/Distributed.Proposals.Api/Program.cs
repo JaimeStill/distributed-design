@@ -21,6 +21,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseJsonExceptionHandler();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseRouting();

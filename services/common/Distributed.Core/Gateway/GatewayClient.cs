@@ -20,7 +20,7 @@ public abstract class GatewayClient
     {
         endpoint = gateway.GetEndpoint(name);
         JsonFormat = format
-            ?? ConfigurationExtensions.ConfigureJsonOptions(new JsonSerializerOptions());
+            ?? ServiceExtensions.ConfigureJsonOptions(new JsonSerializerOptions());
     }
 
     public async Task<Guid?> Initialize()
