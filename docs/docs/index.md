@@ -38,7 +38,7 @@ Term | Definition | Example
 **Saga** | A **Service** that defines system-drive private data mutation methods; they isolate reactionary logic for determining how to handle effects of mutations triggered through **Events**. | Pending
 **Service** | A class that exposes functionality and is registered with the .NET Dependency Injection service container. **Query**, **Command**, **EventListener**, and **Saga** are all examples of services with a targeted intent. | [`GatewayService`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Gateway/GatewayService.cs)
 
-## Layout
+## Directory Structure
 
 The layout of the repository is expressed as follows:
 
