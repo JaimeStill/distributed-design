@@ -9,13 +9,15 @@
 ## Docker
 
 ```bash
-# Proposals API - Run from ./nodes
-docker build -t proposals-api -f ./api/Distributed.Proposals.Api/Dockerfile .
+# proposals node - run from ./nodes
+docker build -t proposals-api -f ./proposals/Proposals.Api/Dockerfile .
 docker run -it --rm -p 5001:80 propsals-api
+docker rmi proposals-api
 
-# Workflows API - Run from ./nodes
-docker build -t workflows-api -f ./api/Workflows.Api/Dockerfile .
+# workflows node - run from ./nodes
+docker build -t workflows-api -f ./workflows/Workflows.Api/Dockerfile .
 docker run -it --rm -p 5002:80 workflows-api
+docker rmi workflows-api
 ```
 
 ## Configuration - Options Pattern
