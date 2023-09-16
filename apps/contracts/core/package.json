@@ -1,0 +1,19 @@
+{
+  "name": "@distributed/contracts",
+  "version": "0.0.1",
+  "description": "Distributed node core contracts",
+  "main": "index.ts",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "author": "Jaime Still",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@distributed/core": "file:../../core"
+  }
+}
