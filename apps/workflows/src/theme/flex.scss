@@ -1,0 +1,183 @@
+.fx {
+    display: flex;
+}
+
+.fx-flex {
+    flex: 1 1 auto;
+}
+
+/*#region Flex Direction */
+
+.fx-row {
+    flex-direction: row;
+}
+
+.fx-row-reverse {
+    flex-direction: row-reverse;
+}
+
+.fx-column {
+    flex-direction: column;
+}
+
+.fx-column-reverse {
+    flex-direction: column-reverse;
+}
+
+/*#endregion */
+
+/*#region Flex Wrap */
+
+.fx-wrap {
+    flex-wrap: wrap;
+}
+
+.fx-wrap-none {
+    flex-wrap: nowrap;
+}
+
+.fx-wrap-reverse {
+    flex-wrap: wrap-reverse;
+}
+
+/*#endregion */
+
+/*#region Justify Content */
+
+.fx-jc-flex-start {
+    justify-content: flex-start;
+}
+
+.fx-jc-flex-end {
+    justify-content: flex-end;
+}
+
+.fx-jc-start {
+    justify-content: start;
+}
+
+.fx-jc-end {
+    justify-content: end;
+}
+
+.fx-jc-left {
+    justify-content: left;
+}
+
+.fx-jc-right {
+    justify-content: right;
+}
+
+.fx-jc-center {
+    justify-content: center;
+}
+
+.fx-jc-space-between {
+    justify-content: space-between;
+}
+
+.fx-jc-space-around {
+    justify-content: space-around;
+}
+
+.fx-jc-space-evenly {
+    justify-content: space-evenly;
+}
+
+/*#endregion */
+
+/*#region Align Items */
+
+.fx-ai-stretch {
+    align-items: stretch;
+}
+
+.fx-ai-start {
+    align-items: flex-start;
+}
+
+.fx-ai-end {
+    align-items: flex-end;
+}
+
+.fx-ai-center {
+    align-items: center;
+}
+
+.fx-ai-baseline {
+    align-items: baseline;
+}
+
+/*#endregion */
+
+/*#region Align Content */
+
+.fx-ac-normal {
+    align-content: normal;
+}
+
+.fx-ac-start {
+    align-content: flex-start;
+}
+
+.fx-ac-end {
+    align-content: flex-end;
+}
+
+.fx-ac-center {
+    align-content: center;
+}
+
+.fx-ac-space-between {
+    align-content: space-between;
+}
+
+.fx-ac-space-around {
+    align-content: space-around;
+}
+
+.fx-ac-space-evenly {
+    align-content: space-evenly;
+}
+
+.fx-ac-stretch {
+    align-content: stretch;
+}
+
+/*#region Align Self */
+
+.fx-as-auto {
+    align-self: auto;
+}
+
+.fx-as-start {
+    align-self: flex-start;
+}
+
+.fx-as-end {
+    align-self: flex-end;
+}
+
+.fx-as-center {
+    align-self: center;
+}
+
+.fx-as-baseline {
+    align-self: baseline;
+}
+
+.fx-as-stretch {
+    align-self: stretch;
+}
+
+/*#endregion */
+
+@for $i from 0 through 8 {
+    .fx-grow-#{$i} {
+        flex-grow: $i;
+    }
+
+    .fx-shrink-#{$i} {
+        flex-shrink: $i;
+    }
+}
