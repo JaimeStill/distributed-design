@@ -1,0 +1,21 @@
+{
+  "name": "@workflows/contracts",
+  "version": "0.0.1",
+  "description": "Workflows node contracts",
+  "main": "index.ts",
+  "type": "module",
+  "types": "dist/workflows/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "author": "Jaime Still",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@distributed/contracts": "file:../core",
+    "@distributed/core": "file:../../core"
+  }
+}
