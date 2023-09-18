@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Distributed node core contracts",
   "main": "index.ts",
+  "type": "module",
   "types": "dist/core/index.d.ts",
   "scripts": {
     "build": "tsc",

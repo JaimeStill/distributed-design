@@ -6,9 +6,7 @@
     "declaration": true,
     "declarationMap": true,
     "inlineSources": true,
-    "types": [
-      "./node_modules/@distributed/core/dist/core/index.d.ts"
-    ]
+    "types": []
   },
   "exclude": [
     "**/*.spec.ts"

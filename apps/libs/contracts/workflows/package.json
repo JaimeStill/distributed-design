@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Workflows node contracts",
   "main": "index.ts",
+  "type": "module",
   "types": "dist/workflows/index.d.ts",
   "scripts": {
     "build": "tsc",

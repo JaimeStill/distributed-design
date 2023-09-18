@@ -13,10 +13,10 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { ToolkitModule } from '@distributed/toolkit';
 import { CdkModule } from './cdk.module';
 import { MaterialModule } from './material.module';
 import { AppComponent } from './app.component';
-import { ToolkitModule } from '@distributed/toolkit';
 
 @NgModule({
   declarations: [

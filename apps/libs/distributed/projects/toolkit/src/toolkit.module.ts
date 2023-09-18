@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 import { CdkModule } from './cdk.module';
 import { MaterialModule } from './material.module';
 
@@ -15,6 +16,7 @@ import { Pipes } from './pipes';
     ...Pipes
   ],
   imports: [
+    BrowserModule,
     CdkModule,
     MaterialModule
   ],
