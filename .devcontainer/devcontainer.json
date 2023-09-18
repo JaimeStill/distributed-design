@@ -46,16 +46,30 @@
 	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [1433, 5001, 5002],
+	"forwardPorts": [
+		1433,
+		3001,
+		3002,
+		5001,
+		5002
+	],
 	"portsAttributes": {
-			"5001": {
-				"protocol": "http",
-				"label": "Proposals API"
-			},
-			"5002": {
-				"protocol": "http",
-				"label": "Workflows API"
-			}
+		"3001": {
+			"protocol": "http",
+			"label": "Proposals App"
+		},
+		"3002": {
+			"protocol": "http",
+			"label": "Workflows App"
+		},
+		"5001": {
+			"protocol": "http",
+			"label": "Proposals API"
+		},
+		"5002": {
+			"protocol": "http",
+			"label": "Workflows API"
+		}
 	},
 
 	// postCreateCommand.sh parameters: $1=SA password, $2=dacpac path, $3=sql script(s) path
@@ -67,7 +81,8 @@
 		"ghcr.io/devcontainers/features/powershell:1": {}
 	},
 	"remoteEnv": {
-		"ASPNETCORE_ENVIRONMENT": "Codespaces"
+		"ASPNETCORE_ENVIRONMENT": "Codespaces",
+		"NG_CLI_ANALYTICS": "false"
 	}
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.

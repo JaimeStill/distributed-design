@@ -18,9 +18,10 @@
         "@angular/platform-browser": "^16.2.4",
         "@angular/platform-browser-dynamic": "^16.2.4",
         "@angular/router": "^16.2.4",
-        "@distributed/contracts": "file:../contracts/core",
-        "@distributed/core": "file:../core",
-        "@workflows/contracts": "file:../contracts/workflows",
+        "@distributed/contracts": "file:../libs/contracts/core",
+        "@distributed/core": "file:../libs/core",
+        "@distributed/toolkit": "file:../libs/distributed/dist/toolkit",
+        "@workflows/contracts": "file:../libs/contracts/workflows",
         "rxjs": "~7.8.1",
         "tslib": "^2.6.2",
         "zone.js": "~0.13.1"
