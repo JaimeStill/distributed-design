@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/dotnet-mssql
 {
-	"name": "C# (.NET) and MS SQL",
+	"name": "Distributed Nodes",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
@@ -24,7 +24,9 @@
 						"password": "P@ssw0rd",
 						"emptyPasswordInput": false,
 						"savePassword": true,
-						"profileName": "ContainerSql"
+						"profileName": "ContainerSql",
+						"encrypt": "Mandatory",
+						"trustServerCertificate": true
 					}
 				]
 			},
