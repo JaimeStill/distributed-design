@@ -4,7 +4,7 @@
   "description": "Workflows node contracts",
   "main": "index.ts",
   "type": "module",
-  "types": "dist/workflows/index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch"
