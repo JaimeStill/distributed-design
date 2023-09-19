@@ -8,8 +8,16 @@ public class WorkflowsGateway : GatewayClient
     : base(gateway, "Workflows")
     { }
 
-    public async Task<Package?> GetPackage(int id, string type) =>
-        await Get<Package?>($"getPackage/{id}/{type}");
+    public async Task<List<Package>> GetPackagesByType(string type) =>
+        await Get<List<Package>>($"getPackagesByType/{type}")
+        ?? new();
+
+    public async Task<List<Package>> GetPackagesByEntity(int id, string type) =>
+        await Get<List<Package>>($"getPackagesByEntity/{id}/{type}")
+        ?? new();
+
+    public async Task<Package?> GetActivePackage(int id, string type) =>
+        await Get<Package?>($"getActivePackage/{id}/{type}");
 
     public async Task<ValidationMessage?> ValidatePackage(Package package) =>
         await Post<ValidationMessage, Package>(package, "validatePackage");

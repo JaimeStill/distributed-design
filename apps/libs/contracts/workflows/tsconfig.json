@@ -5,7 +5,7 @@
         "target": "ES2022",
         "module": "ES2022",
         "rootDir": "./src",
-        "outDir": "./dist/workflows",
+        "outDir": "./dist",
         "declaration": true,
         "esModuleInterop": false,
         "forceConsistentCasingInFileNames": true,

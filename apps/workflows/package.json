@@ -4,32 +4,32 @@
     "scripts": {
         "ng": "ng",
         "build": "ng build --configuration development",
-        "deploy": "ng build --output-path docs --base-href /workflows/ && copy docs\\index.html docs\\404.html",
         "start": "ng serve --configuration development"
     },
     "private": true,
     "dependencies": {
-        "@angular/animations": "^16.2.4",
-        "@angular/cdk": "^16.2.3",
-        "@angular/common": "^16.2.4",
+        "@angular/animations": "^16.2.5",
+        "@angular/cdk": "^16.2.4",
+        "@angular/common": "^16.2.5",
         "@angular/compiler": "^16.2.4",
-        "@angular/core": "^16.2.4",
-        "@angular/forms": "^16.2.4",
-        "@angular/material": "^16.2.3",
-        "@angular/platform-browser": "^16.2.4",
-        "@angular/platform-browser-dynamic": "^16.2.4",
-        "@angular/router": "^16.2.4",
-        "@distributed/contracts": "file:../contracts/core",
-        "@distributed/core": "file:../core",
-        "@workflows/contracts": "file:../contracts/workflows",
+        "@angular/core": "^16.2.5",
+        "@angular/forms": "^16.2.5",
+        "@angular/material": "^16.2.4",
+        "@angular/platform-browser": "^16.2.5",
+        "@angular/platform-browser-dynamic": "^16.2.5",
+        "@angular/router": "^16.2.5",
+        "@distributed/contracts": "file:../libs/contracts/core",
+        "@distributed/core": "file:../libs/core",
+        "@distributed/toolkit": "file:../libs/distributed/dist/toolkit",
+        "@workflows/contracts": "file:../libs/contracts/workflows",
         "rxjs": "~7.8.1",
         "tslib": "^2.6.2",
         "zone.js": "~0.13.1"
     },
     "devDependencies": {
-        "@angular-devkit/build-angular": "^16.2.1",
+        "@angular-devkit/build-angular": "^16.2.2",
         "@angular/cli": "~16.2.1",
-        "@angular/compiler-cli": "^16.2.4",
+        "@angular/compiler-cli": "^16.2.5",
         "typescript": "^5.1.6"
     }
 }

@@ -4,6 +4,8 @@ using Proposals.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Console.WriteLine(builder.Configuration.GetConnectionString("App"));
+
 builder.Services.ConfigureDbContext<ProposalsContext>(
     builder.Configuration,
     "App"

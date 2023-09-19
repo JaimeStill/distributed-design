@@ -6,6 +6,275 @@
 * Docker
 * Command Hooks and Transactions
 
+## Integrate Local NPM Modules With Standalone Local Angular Libraries
+
+When I wrote the [Local npm Packages](https://jaimestill.github.io/azure-dev-resources/npm.html#local-npm-packages) documentation, I did not consider the additional details that would be needed for integration into a standalone local Angular library.
+
+The following section will outline how to setup an npm package, an Angular library in an isolated workspace that uses the package, and an Angular app that uses the Angular library as an npm package.
+
+### npm Package Setup
+
+```bash
+mkdir [package]
+cd [package]
+npm init
+```
+
+**package.json**
+
+```jsonc
+{
+    "name": "@scope/[package]",
+    "version": "0.0.1",
+    "description": "Package description",
+    "main": "index.ts",
+    "type": "module",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc --watch"
+    },
+    // additional configuration
+}
+```
+
+**tsconfig.json**
+
+```jsonc
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "moduleResolution": "node",
+        "target": "ES2022",
+        "module": "ES2022",
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "declaration": true,
+        "esModuleInterop": false,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true
+    }
+}
+```
+
+**Build**
+
+```bash
+npm i
+npm run build
+```
+
+### Angular Library Setup
+
+> It is important to note that while the library within the Angular workspace has a package.json, you should not run `npm install` for the library. It is purely there to generate the ES module build with **ng-packagr**.
+
+```bash
+npm i -g @angular/cli
+
+ng new [workspace] `
+    --package-manager npm `
+    --minimal `
+    --no-create-application `
+    --skip-git
+
+cd [workspace]
+
+npm i ../[package] -s
+
+ng generate library [name] --entry-file index.ts
+```
+
+**Workspace - package.json**
+
+```jsonc
+{
+    "name": "[workspace]",
+    "version": "0.0.0",
+    "private": "true",
+    "dependencies": {
+        "@scope/[package]": "file../[package]",
+        // additional deps
+    },
+    // additional config
+}
+```
+
+**Workspace - tsconfig.json**
+
+```jsonc
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "baseUrl": "./",
+        "outDir": "./dist/out-tsc",
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "sourceMap": true,
+        "declaration": false,
+        "downlevelIteration": true,
+        "experimentalDecorators": true,
+        "moduleResolution": "node",
+        "importHelpers": true,
+        "target": "ES2022",
+        "module": "ES2022",
+        "useDefineForClassFields": false,
+        "paths": {
+            "[name]": [
+                "dist/[name]"
+            ]
+        },
+        "lib": [
+            "ES2022",
+            "dom"
+        ]
+    },
+    "angularCompilerOptions": {
+        "enableI18nLegacyMessageIdFormat": false,
+        "strictInjectionParameters": true,
+        "strictInputAccessModifiers": true,
+        "strictTemplates": true
+    }
+}
+```
+
+**Workspace - angular.json**
+
+```jsonc
+{
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "version": 1,
+    "cli": {
+        "packageManager": "npm"
+    },
+    "newProjectRoot": "projects",
+    "projects": {
+        "[name]": {
+            "projectType": "library",
+            "root": "projects/[name]",
+            "sourceRoot": "projects/[name]/src",
+            "prefix": "lib",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:ng-packagr",
+                    "options": {
+                        "project": "projects/[name]/ng-package.json"
+                    },
+                    "configurations": {
+                        "production": {
+                        "tsConfig": "projects/[name]/tsconfig.lib.prod.json"
+                        },
+                        "development": {
+                        "tsConfig": "projects/[name]/tsconfig.lib.json"
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                }
+            }
+        }
+    }
+}
+```
+
+**Library - ng-package.json**
+
+```jsonc
+{
+    "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+    "dest": "../../dist/[name]",
+    "lib": {
+        "entryFile": "src/index.ts"
+    }
+}
+```
+
+**Library - package.json**
+
+```jsonc
+{
+    "name": "@scope/[name]",
+    "version": "0.0.1",
+    "peerDependencies": {
+        "@scope/[package]": "file:../../../[package]",
+        // additional dependencies
+    },
+    "dependencies": {
+        "tslib": "[version]"
+    },
+    "sideEffects": false
+}
+```
+
+**Build**
+
+> Conducted from workspace root
+
+```bash
+npm i
+npm run build
+```
+
+### Angular App Integration
+
+The following steps must be conducted on every Angular application that intends to use the Angular library.
+
+Within the Angular app workspace:
+
+```bash
+# install NPM package @scope/[package]
+# listed as peerDependency for 
+# Angular library @scope/[name]
+npm i [path-to-@scope/[package]] -s
+
+# install Angular library @scope/[name]
+npm i [path-to-@scope/[name]] -s
+```
+
+Configure the following settings in the following files:
+
+**tsconfig.json**
+
+```jsonc
+{
+    "paths": {
+        "@scope/[package]": [
+            "node_modules/@scope/[package]/dist/*"
+        ]
+    },
+    // additional configuration
+}
+```
+
+**angular.json**
+
+```jsonc
+{
+    "projects": {
+        "[app]" {
+            "architect": {
+                "build": {
+                    "options": {
+                        "preserveSymlinks": true
+                    }
+                }
+            }
+        }
+    }
+    // additional configuration
+}
+```
+
+**Build**
+
+```bash
+npm run build
+# or
+npm run start
+```
+
 ## Docker
 
 ```bash
