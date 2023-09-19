@@ -181,6 +181,8 @@ where Db : DbContext
                 if (AfterSave is not null)
                     entity = await HandleHook(entity, AfterSave);
 
+                await transaction.CommitAsync();
+
                 return result;
             }
             catch (Exception ex)
@@ -212,6 +214,8 @@ where Db : DbContext
                     entity = await HandleHook(entity, AfterRemove);
 
                 await SyncRemove(entity);
+
+                await transaction.CommitAsync();
 
                 return new(entity.Id, $"{typeof(T)} successfully removed");
             }
