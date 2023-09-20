@@ -25,9 +25,7 @@ export abstract class EventClient<T> {
 
     protected buildHubConnection = (endpoint: string): HubConnection =>
         new HubConnectionBuilder()
-            .withUrl(endpoint, {
-                withCredentials: true
-            })
+            .withUrl(endpoint)
             .configureLogging(LogLevel.Information)
             .withAutomaticReconnect()
             .build();

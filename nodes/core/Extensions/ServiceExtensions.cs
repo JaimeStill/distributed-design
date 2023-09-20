@@ -35,21 +35,20 @@ public static class ServiceExtensions
             .Services
             .AddCors(options =>
                 options.AddDefaultPolicy(policy =>
-                {
-                    string[] origins = builder.Configuration.GetConfigArray("CorsOrigins");
-
-                    foreach (string origin in origins)
-                        Console.WriteLine($"CORS Origin: {origin}");
-
                     policy
-                        .WithOrigins(origins)
                         .AllowAnyMethod()
                         .AllowAnyHeader()
                         .AllowCredentials()
+                        .WithOrigins(
+                            builder
+                                .Configuration
+                                .GetConfigArray("CorsOrigins")
+                        )
                         .WithExposedHeaders(
-                            "Access-Control-Allow-Origin"
-                        );
-                })
+                            "Access-Control-Allow-Origin",
+                            "Access-Control-Allow-Credentials"
+                        )
+                )
             );
 
     public static IServiceCollection ConfigureDbContext<Db>(this IServiceCollection services, IConfiguration config, string connection) where Db : DbContext =>
