@@ -60,6 +60,20 @@
               ],
               "outputHashing": "all"
             },
+            "codespace": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.codespace.ts"
+                }
+              ]
+            },
             "development": {
               "buildOptimizer": false,
               "optimization": false,
@@ -79,6 +93,9 @@
           "configurations": {
             "production": {
               "browserTarget": "proposals:build:production"
+            },
+            "codespace": {
+              "browserTarget": "proposals:build:codespace"
             },
             "development": {
               "browserTarget": "proposals:build:development"

@@ -1,1 +1,6 @@
 <p class="m8 mat-headline-5">Home</p>
+<ng-container *ngIf="packages?.length > 0">
+    <div *ngFor="let package of packages">
+        <p class="m8">{{package.title}}</p>
+    </div>
+</ng-container>

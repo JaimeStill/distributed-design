@@ -2,6 +2,10 @@
 
 ## Todo
 
+* DevContainer Setup
+    * `appsettings.Codespaces.json`
+    * **.devcontainer**
+    * Procedures for once the container is built and the post create command has finished executing
 * JsonExceptionHandler Middleware
 * Docker
 * Command Hooks and Transactions

@@ -20,22 +20,22 @@ public class GatewayController : GatewayControllerBase
         this.packageCommand = packageCommand;
     }
 
-    [HttpGet("[action]/{type}")]
+    [HttpGet("[action]/{entityType}")]
     public async Task<IActionResult> GetPackagesByType(
-        [FromRoute] string type
-    ) => ApiResult(await packageQuery.GetByType(type));
+        [FromRoute] string entityType
+    ) => ApiResult(await packageQuery.GetByType(entityType));
 
-    [HttpGet("[action]/{id:int}/{type}")]
+    [HttpGet("[action]/{id:int}/{entityType}")]
     public async Task<IActionResult> GetPackagesByEntity(
         [FromRoute] int id,
-        [FromRoute] string type
-    ) => ApiResult(await packageQuery.GetByEntity(id, type));
+        [FromRoute] string entityType
+    ) => ApiResult(await packageQuery.GetByEntity(id, entityType));
 
-    [HttpGet("[action]/{id:int}/{type}")]
+    [HttpGet("[action]/{id:int}/{entityType}")]
     public async Task<IActionResult> GetActivePackage(
         [FromRoute] int id,
-        [FromRoute] string type
-    ) => ApiResult(await packageQuery.GetActivePackage(id, type));
+        [FromRoute] string entityType
+    ) => ApiResult(await packageQuery.GetActivePackage(id, entityType));
 
     [HttpPost("[action]")]
     public async Task<IActionResult> ValidatePackage([FromBody] Package package) =>

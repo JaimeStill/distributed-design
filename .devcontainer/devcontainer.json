@@ -54,6 +54,9 @@
 		5002
 	],
 	"portsAttributes": {
+		"1433": {
+			"label": "SQL Server"
+		},
 		"3001": {
 			"protocol": "http",
 			"label": "Proposals App"

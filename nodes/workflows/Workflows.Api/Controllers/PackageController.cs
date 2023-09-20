@@ -16,11 +16,11 @@ public class PackageController : EntityController<Package, PackageQuery, Package
         this.query = query;
     }
 
-    [HttpGet("[action]/{id:int}/{type}")]
+    [HttpGet("[action]/{id:int}/{entityType}")]
     public async Task<IActionResult> GetByEntity(
         [FromRoute] int id,
-        [FromRoute] string type
-    ) => ApiResult(await query.GetByEntity(id, type));
+        [FromRoute] string entityType
+    ) => ApiResult(await query.GetByEntity(id, entityType));
 
     [HttpGet("[action]/{id:int}")]
     public async Task<IActionResult> GetByWorkflow([FromRoute]int id) =>

@@ -3,8 +3,12 @@
     "version": "0.0.1",
     "scripts": {
         "ng": "ng",
-        "build": "ng build --configuration development",
-        "start": "ng serve --configuration development"
+        "build:dev": "ng build --configuration development",
+        "start:dev": "ng serve --configuration development",
+        "build:code": "ng build --configuration codespace",
+        "start:code": "ng serve --configuration codespace",
+        "build": "ng build",
+        "start": "ng serve"
     },
     "private": true,
     "dependencies": {

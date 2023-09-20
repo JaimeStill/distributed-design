@@ -14,22 +14,22 @@ public class WorkflowsController : ApiController
         this.gateway = gateway;
     }
 
-    [HttpGet("[action]/{type}")]
+    [HttpGet("[action]/{entityType}")]
     public async Task<IActionResult> GetPackagesByType(
-        [FromRoute] string type
-    ) => ApiResult(await gateway.GetPackagesByType(type));
+        [FromRoute] string entityType
+    ) => ApiResult(await gateway.GetPackagesByType(entityType));
 
-    [HttpGet("[action]/{id:int}/{type}")]
+    [HttpGet("[action]/{id:int}/{entityType}")]
     public async Task<IActionResult> GetPackagesByEntity(
         [FromRoute] int id,
-        [FromRoute] string type
-    ) => ApiResult(await gateway.GetPackagesByEntity(id, type));
+        [FromRoute] string entityType
+    ) => ApiResult(await gateway.GetPackagesByEntity(id, entityType));
 
-    [HttpGet("[action]/{id:int}/{type}")]
+    [HttpGet("[action]/{id:int}/{entityType}")]
     public async Task<IActionResult> GetActivePackage(
         [FromRoute] int id,
-        [FromRoute] string type
-    ) => ApiResult(await gateway.GetActivePackage(id, type));
+        [FromRoute] string entityType
+    ) => ApiResult(await gateway.GetActivePackage(id, entityType));
 
     [HttpPost("[action]")]
     public async Task<IActionResult> ValidatePackage(

@@ -35,10 +35,21 @@ public static class ServiceExtensions
             .Services
             .AddCors(options =>
                 options.AddDefaultPolicy(policy =>
-                    policy.AllowAnyOrigin()
+                {
+                    string[] origins = builder.Configuration.GetConfigArray("CorsOrigins");
+
+                    foreach (string origin in origins)
+                        Console.WriteLine($"CORS Origin: {origin}");
+
+                    policy
+                        .WithOrigins(origins)
                         .AllowAnyMethod()
                         .AllowAnyHeader()
-                )
+                        .AllowCredentials()
+                        .WithExposedHeaders(
+                            "Access-Control-Allow-Origin"
+                        );
+                })
             );
 
     public static IServiceCollection ConfigureDbContext<Db>(this IServiceCollection services, IConfiguration config, string connection) where Db : DbContext =>
@@ -105,6 +116,12 @@ public static class ServiceExtensions
                     ((ServiceRegistrant?)Activator.CreateInstance(registrant, services))?.Register();
         }
     }
+
+    static string[] GetConfigArray(this IConfiguration config, string section) =>
+        config
+            .GetSection(section)
+            .Get<string[]>()
+        ?? Array.Empty<string>();
 
     static bool IsValidServiceRegistrant(this Type t) =>
         t.IsClass
