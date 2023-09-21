@@ -1,8 +1,15 @@
 <p class="m8 mat-headline-5">Home</p>
 <p class="m8 mat-h3">Socket Connection: {{packageListener?.status?.connectionId ?? 'Not Connected'}}</p>
 <p class="m8 mat-h3">Socket Status: {{packageListener?.status?.state}}</p>
-<ng-container *ngIf="packages?.length > 0">
-    <div *ngFor="let package of packages">
-        <p class="m8">{{package.title}}</p>
+<div *ngIf="packages?.length > 0"
+     flexContainer
+     flexAlign="start"
+     flexCross="start">
+    <div *ngFor="let package of packages"
+         flexContainer
+         flexAlign="center"
+         flexCross="center"
+         class="rounded border-primary p4 m8">
+        <p class="m4">{{package.title}}</p>
     </div>
-</ng-container>
+</div>
