@@ -5,6 +5,20 @@ SApassword=$1
 dacpath=$2
 sqlpath=$3
 
+# modify port visibility
+gh codespace ports visibility 5001:public 5002:public -c $CODESPACE_NAME
+
+# install dotnet tools
+dotnet tool install -g dotnet-ef
+
+# migrate databases
+dotnet ef database update -p ./nodes/proposals/Proposals.Data/
+dotnet ef database update -p ./nodes/workflows/Workflows.Data/
+
+# npm update
+npm i -g npm
+
+# configure SQL Server
 echo "SELECT * FROM SYS.DATABASES" | dd of=testsqlconnection.sql
 for i in {1..60};
 do
@@ -62,16 +76,3 @@ then
         fi
     done
 fi
-
-# modify port visibility
-gh codespace ports visibility 5001:public 5002:public -c $CODESPACE_NAME
-
-# npm update
-npm i -g npm
-
-# install dotnet tools
-dotnet tool install -g dotnet-ef
-
-# migrate databases
-dotnet ef database update -p ./nodes/proposals/Proposals.Data/
-dotnet ef database update -p ./nodes/workflows/Workflows.Data/
