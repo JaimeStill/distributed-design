@@ -1,0 +1,23 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Node - Proposals",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "nodes-build",
+            "program": "${workspaceFolder}/nodes/proposals/Proposals.Api/bin/Debug/net7.0/Proposals.Api.dll",
+            "cwd": "${workspaceFolder}/nodes/proposals/Proposals.Api",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Debug Node - Workflows",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "nodes-build",
+            "program": "${workspaceFolder}/nodes/workflows/Workflows.Api/bin/Debug/net7.0/Workflows.Api.dll",
+            "cwd": "${workspaceFolder}/nodes/workflows/Workflows.Api",
+            "stopAtEntry": false
+        }
+    ]
+}

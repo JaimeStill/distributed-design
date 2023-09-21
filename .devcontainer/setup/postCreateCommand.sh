@@ -6,7 +6,8 @@ dacpath=$2
 sqlpath=$3
 
 # modify port visibility
-gh codespace ports visibility 5001:public 5002:public -c $CODESPACE_NAME
+gh codespace ports visibility 5001:public -c $CODESPACE_NAME
+gh codespace ports visibility 5002:public -c $CODESPACE_NAME
 
 # install dotnet tools
 dotnet tool install -g dotnet-ef

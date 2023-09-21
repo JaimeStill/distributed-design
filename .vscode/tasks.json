@@ -1,0 +1,134 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "nodes-build",
+            "command": "dotnet build",
+            "type": "shell",
+            "problemMatcher": "$msCompile",
+            "options": {
+                "cwd": "${workspaceFolder}/nodes"
+            }
+        },
+        {
+            "label": "nodes-proposals-watch",
+            "command": "dotnet watch run",
+            "type": "process",
+            "problemMatcher": "$msCompile",
+            "options": {
+                "cwd": "${workspaceFolder}/nodes/proposals"
+            }
+        },
+        {
+            "label": "nodes-workflows-watch",
+            "command": "dotnet watch run",
+            "type": "process",
+            "problemMatcher": "$msCompile",
+            "options": {
+                "cwd": "${workspaceFolder}/nodes/workflows"
+            }
+        },
+        {
+            "label": "apps-build",
+            "dependsOn": [
+                "apps-install",
+                "apps-core-build",
+                "apps-contracts-core-build",
+                "apps-contracts-workflows-build",
+                "apps-distributed-build"
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
+            "label": "apps-install",
+            "dependsOn": [
+                "apps-core-install",
+                "apps-contracts-core-install",
+                "apps-contracts-workflows-install",
+                "apps-distributed-install",
+                "apps-proposals-install",
+                "apps-workflows-install"
+            ],
+            "dependsOrder": "parallel"
+        },
+        {
+            "label": "apps-core-install",
+            "command": "npm i",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/apps/libs/core"
+            }
+        },
+        {
+            "label": "apps-contracts-core-install",
+            "command": "npm i",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/apps/libs/contracts/core"
+            }
+        },
+        {
+            "label": "apps-contracts-workflows-install",
+            "command": "npm i",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/apps/libs/contracts/workflows"
+            }
+        },
+        {
+            "label": "apps-distributed-install",
+            "command": "npm i",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/apps/libs/distributed"
+            }
+        },
+        {
+            "label": "apps-proposals-install",
+            "command": "npm i",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/apps/proposals"
+            }
+        },
+        {
+            "label": "apps-workflows-install",
+            "command": "npm i",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/apps/workflows"
+            }
+        },{
+            "label": "apps-core-build",
+            "command": "npm run build",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/apps/libs/core"
+            }
+        },
+        {
+            "label": "apps-contracts-core-build",
+            "command": "npm run build",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/apps/libs/contracts/core"
+            }
+        },
+        {
+            "label": "apps-contracts-workflows-build",
+            "command": "npm run build",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/apps/libs/contracts/workflows"
+            }
+        },
+        {
+            "label": "apps-distributed-build",
+            "command": "npm run build",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/apps/libs/distributed"
+            }
+        }
+    ]
+}
