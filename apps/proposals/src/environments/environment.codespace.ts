@@ -1,5 +1,5 @@
 export const environment = {
-    server: 'https://curly-cod-97jqgggxjgqf97x9-5001.app.github.dev/',
-    api: 'https://curly-cod-97jqgggxjgqf97x9-5001.app.github.dev/api/',
-    events: 'https://curly-cod-97jqgggxjgqf97x9-5001.app.github.dev/events/'
+    server: 'https://supreme-space-barnacle-pjpg5556p95c6wgw-5001.app.github.dev/',
+    api: 'https://supreme-space-barnacle-pjpg5556p95c6wgw-5001.app.github.dev/api/',
+    events: 'https://supreme-space-barnacle-pjpg5556p95c6wgw-5001.app.github.dev/events/'
 }

@@ -63,7 +63,42 @@ then
     done
 fi
 
+# modify port visibility
+gh codespace ports visibility 5001:public 5002:public
+
+# npm update
+npm i -g npm
+
+# install dotnet tools
 dotnet tool install -g dotnet-ef
 
+# migrate databases
 dotnet ef database update -p ./nodes/proposals/Proposals.Data/
 dotnet ef database update -p ./nodes/workflows/Workflows.Data/
+
+# install npm packages and build libraries
+origin=$(pwd)
+
+cd ./apps/libs/core
+npm i
+npm run build
+
+cd ../contracts/core
+npm i
+npm run build
+
+cd ../workflows
+npm i
+npm run build
+
+cd ../../distributed
+npm i
+npm run build
+
+cd ../../proposals
+npm i
+
+cd ../workflows
+npm i
+
+cd $origin

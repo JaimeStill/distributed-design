@@ -31,6 +31,24 @@ public static class ServiceExtensions
         ConfigureJsonOptions(options.PayloadSerializerOptions);
 
     public static IServiceCollection ConfigureCorsService(this WebApplicationBuilder builder) =>
+        builder.Environment.EnvironmentName == "Codespaces"
+            ? builder.ConfigureCodespacesCors()
+            : builder.ConfigureDefaultCors();
+
+    public static IServiceCollection ConfigureCodespacesCors(this WebApplicationBuilder builder) =>
+        builder
+            .Services
+            .AddCors(options =>
+                options.AddDefaultPolicy(policy =>
+                    policy
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .SetIsOriginAllowed((host) => true)
+                        .AllowCredentials()
+                )
+            );
+
+    public static IServiceCollection ConfigureDefaultCors(this WebApplicationBuilder builder) =>
         builder
             .Services
             .AddCors(options =>
