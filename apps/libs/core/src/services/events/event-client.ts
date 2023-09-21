@@ -50,7 +50,8 @@ export abstract class EventClient<T> {
             while (true) {
                 try {
                     await this.connection.start();
-                } catch {
+                } catch(err) {
+                    console.error(err);
                     setTimeout(this.connect, 5000);
                 }
             }

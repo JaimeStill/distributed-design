@@ -1,4 +1,6 @@
 <p class="m8 mat-headline-5">Home</p>
+<p class="m8 mat-h3">Socket Connection: {{packageListener?.status?.connectionId ?? 'Not Connected'}}</p>
+<p class="m8 mat-h3">Socket Status: {{packageListener?.status?.state}}</p>
 <ng-container *ngIf="packages?.length > 0">
     <div *ngFor="let package of packages">
         <p class="m8">{{package.title}}</p>

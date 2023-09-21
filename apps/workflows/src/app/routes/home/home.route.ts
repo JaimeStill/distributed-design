@@ -25,7 +25,7 @@ export class HomeRoute implements OnInit {
 
   constructor(
     private packageQuery: PackageQuery,
-    private packageListener: PackageListener,
+    public packageListener: PackageListener,
     private snacker: SnackerService
   ) { }
 
