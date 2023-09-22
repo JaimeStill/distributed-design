@@ -10,6 +10,32 @@
 * Docker
 * Command Hooks and Transactions
 
+## npm link
+
+```bash
+# from source code dist
+npm link
+
+# in consuming project
+npm link [package]
+
+# list all globally linked packages
+npm ls -g --depth=0 --link=true
+
+# unlink a package
+npm unlink -g [package]
+```
+
+In `tsconfig.json`, ensure all linked libraries have `path` values that point to their `dist` folders to ensure proper change detection:
+
+```json
+"paths": {
+    "@distributed/core": [
+        "../libs/core/dist/*"
+    ]
+}
+```
+
 ## Integrate Local NPM Modules With Standalone Local Angular Libraries
 
 When I wrote the [Local npm Packages](https://jaimestill.github.io/azure-dev-resources/npm.html#local-npm-packages) documentation, I did not consider the additional details that would be needed for integration into a standalone local Angular library.

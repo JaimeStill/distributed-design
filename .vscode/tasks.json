@@ -31,6 +31,16 @@
         {
             "label": "apps-build",
             "dependsOn": [
+                "apps-core-build",
+                "apps-contracts-core-build",
+                "apps-contracts-workflows-build",
+                "apps-distributed-build"
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
+            "label": "apps-build-and-install",
+            "dependsOn": [
                 "apps-install",
                 "apps-core-build",
                 "apps-contracts-core-build",

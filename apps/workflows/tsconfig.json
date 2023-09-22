@@ -24,7 +24,7 @@
     ],
     "paths": {
       "@distributed/core": [
-        "node_modules/@distributed/core/dist/*"
+        "../libs/core/dist/*"
       ]
     }
   },
