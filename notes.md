@@ -28,6 +28,7 @@ See:
 
 * `PackageSaga`
 * `Registrant`
+* `appsettings.*.json`
 * `IPackageEventListener`
 * `PackageEventListener`
 * `PackageEventStartup`
