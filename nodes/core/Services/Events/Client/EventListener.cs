@@ -1,22 +1,39 @@
 using Distributed.Core.Entities;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Distributed.Core.Services;
 public abstract class EventListener<T,S> : EventClient<T>, IEventListener<T>
 where T : Entity
 where S : ISaga<T>
 {
-    protected readonly S saga;
+    protected readonly IServiceProvider provider;
 
-    public EventAction Add { get; }
-    public EventAction Update { get; }
-    public EventAction Remove { get; }
+    public EventAction OnAdd { get; }
+    public EventAction OnUpdate { get; }
+    public EventAction OnRemove { get; }
 
-    public EventListener(S saga, string endpoint) : base(endpoint)
+    public EventListener(IServiceProvider provider, string endpoint) : base(endpoint)
     {
-        this.saga = saga;
+        this.provider = provider;
 
-        Add = new("Add", connection);
-        Update = new("Update", connection);
-        Remove = new("Remove", connection);
+        OnAdd = new("OnAdd", connection);
+        OnUpdate = new("OnUpdate", connection);
+        OnRemove = new("OnRemove", connection);
+    }
+
+    protected Func<EventMessage<T>, Task> HandleEvent(Func<EventMessage<T>, S, Task> action) =>
+        async (EventMessage<T> message) =>
+        {
+            using IServiceScope scope = provider.CreateScope();
+            S saga = scope.ServiceProvider.GetRequiredService<S>();
+            await action(message, saga);
+        };
+
+    protected override void DisposeEvents()
+    {
+        base.DisposeEvents();
+        OnAdd.Dispose();
+        OnUpdate.Dispose();
+        OnRemove.Dispose();
     }
 }

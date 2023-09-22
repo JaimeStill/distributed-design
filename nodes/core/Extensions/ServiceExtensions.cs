@@ -89,7 +89,7 @@ public static class ServiceExtensions
             .AddSignalR()
             .AddJsonProtocol(SignalRJsonOptions);
 
-    public static string GetEventEndpoint(IConfiguration config, string service) =>
+    public static string GetEventEndpoint(this IConfiguration config, string service) =>
         config.GetRequiredSection("Events")
               .GetValue<string>(service)
         ?? throw new Exception($"Event Configuration: The requested Event service {service} has not been configured");

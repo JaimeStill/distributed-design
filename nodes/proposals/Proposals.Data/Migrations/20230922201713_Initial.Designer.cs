@@ -12,7 +12,7 @@ using Proposals.Data;
 namespace Proposals.Data.Migrations
 {
     [DbContext(typeof(ProposalsContext))]
-    [Migration("20230915201622_Initial")]
+    [Migration("20230922201713_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -54,6 +54,10 @@ namespace Proposals.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -84,6 +88,10 @@ namespace Proposals.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

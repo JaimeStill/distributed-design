@@ -1,4 +1,5 @@
 using Distributed.Core.Extensions;
+using Proposals.Api.Events;
 using Proposals.Data;
 using Proposals.Services;
 
@@ -18,6 +19,7 @@ builder.ConfigureSignalRServices();
 
 builder.Services.AddGatewayService();
 builder.Services.AddAppServices();
+builder.Services.RegisterEventListeners();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

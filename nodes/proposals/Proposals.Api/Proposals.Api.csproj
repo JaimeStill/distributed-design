@@ -22,7 +22,7 @@
     <ProjectReference Include="..\..\core\Distributed.Core.csproj" />
     <ProjectReference Include="..\Proposals.Data\Proposals.Data.csproj" />
     <ProjectReference Include="..\Proposals.Entities\Proposals.Entities.csproj" />
-    <ProjectReference Include="..\Proposals.Services\Proposals.Logic.csproj" />
+    <ProjectReference Include="..\Proposals.Services\Proposals.Services.csproj" />
   </ItemGroup>
 
 </Project>

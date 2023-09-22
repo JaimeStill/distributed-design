@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Distributed.Core.Extensions;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Distributed.Core.Services;
 public abstract class EventClient<T> : IEventClient<T>
@@ -36,8 +37,8 @@ public abstract class EventClient<T> : IEventClient<T>
             await Connect();
         };
 
-        OnPing = new("Ping", connection);
-        OnSync = new("Sync", connection);
+        OnPing = new("ping", connection);
+        OnSync = new("sync", connection);
         OnPing.Set(() => Console.WriteLine("Pong"));
     }
 
@@ -87,6 +88,11 @@ public abstract class EventClient<T> : IEventClient<T>
         new HubConnectionBuilder()
             .ConfigureJsonFormat()
             .WithUrl(endpoint)
+            .ConfigureLogging(logging =>
+            {
+                logging.AddDebug();
+                logging.SetMinimumLevel(LogLevel.Trace);
+            })
             .WithAutomaticReconnect()
             .Build();
 
