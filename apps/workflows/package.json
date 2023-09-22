@@ -25,6 +25,7 @@
         "@distributed/contracts": "file:../libs/contracts/core",
         "@distributed/core": "file:../libs/core",
         "@distributed/toolkit": "file:../libs/distributed/dist/toolkit",
+        "@microsoft/signalr": "^7.0.11",
         "@workflows/contracts": "file:../libs/contracts/workflows",
         "rxjs": "~7.8.1",
         "tslib": "^2.6.2",

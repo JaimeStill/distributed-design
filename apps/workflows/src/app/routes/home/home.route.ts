@@ -25,7 +25,7 @@ export class HomeRoute implements OnInit {
 
   constructor(
     private packageQuery: PackageQuery,
-    private packageListener: PackageListener,
+    public packageListener: PackageListener,
     private snacker: SnackerService
   ) { }
 
@@ -43,8 +43,8 @@ export class HomeRoute implements OnInit {
     this.refresh();
     await this.packageListener.connect();
 
-    this.packageListener.add.set(this.sync);
-    this.packageListener.update.set(this.sync);
-    this.packageListener.remove.set(this.sync);
+    this.packageListener.onAdd.set(this.sync);
+    this.packageListener.onUpdate.set(this.sync);
+    this.packageListener.onRemove.set(this.sync);
   }
 }

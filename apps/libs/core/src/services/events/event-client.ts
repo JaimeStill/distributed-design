@@ -26,8 +26,7 @@ export abstract class EventClient<T> {
     protected buildHubConnection = (endpoint: string): HubConnection =>
         new HubConnectionBuilder()
             .withUrl(endpoint)
-            .configureLogging(LogLevel.Information)
-            .withAutomaticReconnect()
+            .configureLogging(LogLevel.Trace)
             .build();
 
     protected initialize = (): void => {
@@ -47,12 +46,12 @@ export abstract class EventClient<T> {
 
     async connect() {
         if (this.connection.state !== HubConnectionState.Connected) {
-            while (true) {
-                try {
-                    await this.connection.start();
-                } catch {
-                    setTimeout(this.connect, 5000);
-                }
+            try {
+                await this.connection.start();
+            }
+            catch (err) {
+                console.error(err);
+                setTimeout(this.connect, 5000);
             }
         }
     }
