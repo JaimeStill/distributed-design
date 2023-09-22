@@ -9,6 +9,37 @@
 * JsonExceptionHandler Middleware
 * Docker
 * Command Hooks and Transactions
+* npm link
+* SignalR Diagnostics
+* Gateway Example
+* Saga + EventListener Example
+
+## Gateway Example
+
+Demonstrated withdrawing the active `Package` for a `Proposal` whenever the `Proposal` is removed.
+
+See: `ProposalCommand.AfterRemove`.
+
+## Saga + EventListener Example
+
+Set the `PackageId` of a `Proposal` after an associated `Package` has been added or removed.
+
+See:
+
+* `PackageSaga`
+* `Registrant`
+* `IPackageEventListener`
+* `PackageEventListener`
+* `PackageEventStartup`
+* `EventRegistration`
+* `Program`
+
+## SignalR Diagnostics
+
+* appsettings.json for Server
+* HubConnectionBuilder.ConfigureLogging in EventClient
+
+Make sure the types of the provided values match the types of the hub method being invoked. ***Deserialization of interface types is not supported!***
 
 ## npm link
 
@@ -632,7 +663,7 @@ Instances of `EntityController` just need to specify the generic types associate
 
 ```cs
 using Distributed.Core.Controllers;
-using Distributed.Proposals.Logic;
+using Distributed.Proposals.Services;
 using Distributed.Proposals.Schema;
 using Microsoft.AspNetCore.Mvc;
 

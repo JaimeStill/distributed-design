@@ -6,13 +6,22 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Proposals.Data;
 using Proposals.Entities;
+using Workflows.Contracts;
 
 namespace Proposals.Services;
 public class ProposalCommand : EntityCommand<Proposal, ProposalEventHub, IProposalEventHub, ProposalsContext>
 {
-    public ProposalCommand(ProposalsContext db, IHubContext<ProposalEventHub, IProposalEventHub> events)
+    readonly WorkflowsGateway workflows;
+    public ProposalCommand(
+        WorkflowsGateway workflows,
+        ProposalsContext db,
+        IHubContext<ProposalEventHub,
+        IProposalEventHub> events
+    )
     : base(db, events)
-    { }
+    {
+        this.workflows = workflows;
+    }
 
     protected override Func<Proposal, Task<HookMessage<Proposal>>>? AfterAdd => async (Proposal proposal) =>
     {
@@ -25,6 +34,30 @@ public class ProposalCommand : EntityCommand<Proposal, ProposalEventHub, IPropos
             Set.Attach(proposal);
             proposal.StatusId = status.Id;
             await db.SaveChangesAsync();
+
+            return new(proposal);
+        }
+        catch (Exception ex)
+        {
+            return new(proposal, ex);
+        }
+    };
+
+    protected override Func<Proposal, Task<HookMessage<Proposal>>>? AfterRemove => async (Proposal proposal) =>
+    {
+        try
+        {
+            Package? package = await workflows.GetActivePackage(proposal.Id, proposal.Type);
+            
+            if (package is not null)
+            {
+                ApiMessage<int>? message = await workflows.WithdrawPackage(package);
+
+                if (message is null)
+                    return new(proposal, new Exception("Unable to withdraw associated Package"));
+                else if (message.Error)
+                    return new(proposal, new Exception(message.Message));
+            }
 
             return new(proposal);
         }

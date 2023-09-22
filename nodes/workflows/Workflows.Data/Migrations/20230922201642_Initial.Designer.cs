@@ -12,7 +12,7 @@ using Workflows.Data;
 namespace Workflows.Data.Migrations
 {
     [DbContext(typeof(WorkflowsContext))]
-    [Migration("20230915202050_Initial")]
+    [Migration("20230922201642_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -66,6 +66,10 @@ namespace Workflows.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -102,6 +106,10 @@ namespace Workflows.Data.Migrations
                     b.Property<int>("Index")
                         .HasColumnType("int");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -134,6 +142,10 @@ namespace Workflows.Data.Migrations
 
                     b.Property<int>("Index")
                         .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Value")
                         .IsRequired()
@@ -172,6 +184,10 @@ namespace Workflows.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -196,6 +212,10 @@ namespace Workflows.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

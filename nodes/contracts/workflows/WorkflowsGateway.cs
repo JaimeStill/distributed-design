@@ -26,5 +26,5 @@ public class WorkflowsGateway : GatewayClient
         await Post<ApiMessage<Package>, Package>(package, "submitPackage");
 
     public async Task<ApiMessage<int>?> WithdrawPackage(Package package) =>
-        await Delete<ApiMessage<int>, Package>(package, "withdrawPackage");
+        await Post<ApiMessage<int>, Package>(package, "withdrawPackage");
 }

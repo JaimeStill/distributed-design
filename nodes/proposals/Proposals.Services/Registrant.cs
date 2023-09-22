@@ -11,5 +11,6 @@ public class Registrant : ServiceRegistrant
     {
         services.AddScoped<ProposalQuery>();
         services.AddScoped<ProposalCommand>();
+        services.AddScoped<PackageSaga>();
     }
 }

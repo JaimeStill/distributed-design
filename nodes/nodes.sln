@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Proposals.Data", "proposals
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Proposals.Entities", "proposals\Proposals.Entities\Proposals.Entities.csproj", "{0A4C8FF0-33E1-4956-A61E-1B4A39D1907E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Proposals.Logic", "proposals\Proposals.Services\Proposals.Logic.csproj", "{DEFF7781-5916-4C51-8E4C-461744648127}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Proposals.Services", "proposals\Proposals.Services\Proposals.Services.csproj", "{DEFF7781-5916-4C51-8E4C-461744648127}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{64453DA4-59EE-47E1-A692-2973E66C3E8E}"
 EndProject
