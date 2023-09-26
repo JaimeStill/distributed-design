@@ -5,5 +5,4 @@ export interface Status extends Entity {
     state: Statuses;
     entityId: number;
     entityType: string;
-    context: string;
 }

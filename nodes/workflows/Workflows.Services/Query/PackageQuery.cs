@@ -30,14 +30,8 @@ public class PackageQuery : EntityQuery<Package, WorkflowsContext>
                 x.EntityId == id
                 && x.EntityType == entityType
                 && (
-                    x.State == WorkflowStates.Pending
-                    || x.State == WorkflowStates.Returned
+                    x.State == PackageStates.Pending
+                    || x.State == PackageStates.Returned
                 )
-            );
-
-    public async Task<Package?> GetByWorkflow(int id) =>
-        await Set
-            .FirstOrDefaultAsync(x =>
-                x.WorkflowId == id
             );
 }

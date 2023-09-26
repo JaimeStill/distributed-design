@@ -7,7 +7,6 @@ public static class StatusExtensions
     {
         State = Statuses.Created,
         EntityId = entity.Id,
-        EntityType = entity.Type,
-        Context = $"Created {entity.Type}"
+        EntityType = entity.Type
     };
 }

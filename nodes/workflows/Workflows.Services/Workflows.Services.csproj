@@ -14,7 +14,6 @@
     <ProjectReference Include="..\..\contracts\workflows\Workflows.Contracts.csproj" />
     <ProjectReference Include="..\..\core\Distributed.Core.csproj" />
     <ProjectReference Include="..\Workflows.Data\Workflows.Data.csproj" />
-    <ProjectReference Include="..\Workflows.Entities\Workflows.Entities.csproj" />
   </ItemGroup>
 
 </Project>

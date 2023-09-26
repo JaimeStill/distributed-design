@@ -11,17 +11,5 @@ public class Registrant : ServiceRegistrant
     {
         services.AddScoped<PackageQuery>();
         services.AddScoped<PackageCommand>();
-
-        services.AddScoped<ProcessQuery>();
-        services.AddScoped<ProcessCommand>();
-
-        services.AddScoped<WorkflowQuery>();
-        services.AddScoped<WorkflowCommand>();
-
-        services.AddScoped<ProcessTemplateQuery>();
-        services.AddScoped<ProcessTemplateCommand>();
-
-        services.AddScoped<WorkflowTemplateQuery>();
-        services.AddScoped<WorkflowTemplateCommand>();
     }
 }
