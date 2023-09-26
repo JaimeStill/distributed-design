@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Distributed.Core.Entities;
 
-public abstract class Entity : IEntity
+public abstract class Entity
 {
     public int Id { get; set; }
     public string Type { get; set; }

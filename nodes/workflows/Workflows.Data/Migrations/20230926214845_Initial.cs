@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Proposals.Data.Migrations
+namespace Workflows.Data.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
@@ -12,13 +12,16 @@ namespace Proposals.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Proposal",
+                name: "Package",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    StatusId = table.Column<int>(type: "int", nullable: false),
-                    PackageId = table.Column<int>(type: "int", nullable: true),
+                    State = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Intent = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Result = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EntityId = table.Column<int>(type: "int", nullable: false),
+                    EntityType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -27,27 +30,7 @@ namespace Proposals.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Proposal", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Status",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    State = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EntityId = table.Column<int>(type: "int", nullable: false),
-                    EntityType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Context = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Status", x => x.Id);
+                    table.PrimaryKey("PK_Package", x => x.Id);
                 });
         }
 
@@ -55,10 +38,7 @@ namespace Proposals.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Proposal");
-
-            migrationBuilder.DropTable(
-                name: "Status");
+                name: "Package");
         }
     }
 }

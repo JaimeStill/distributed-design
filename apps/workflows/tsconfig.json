@@ -23,8 +23,14 @@
       "dom"
     ],
     "paths": {
+      "@distributed/contracts": [
+        "../libs/contracts/core/dist/*"
+      ],
       "@distributed/core": [
         "../libs/core/dist/*"
+      ],      
+      "@workflows/contracts": [
+        "../libs/contracts/workflows/dist/*"
       ]
     }
   },

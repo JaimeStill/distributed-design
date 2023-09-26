@@ -21,8 +21,4 @@ public class PackageController : EntityController<Package, PackageQuery, Package
         [FromRoute] int id,
         [FromRoute] string entityType
     ) => ApiResult(await query.GetByEntity(id, entityType));
-
-    [HttpGet("[action]/{id:int}")]
-    public async Task<IActionResult> GetByWorkflow([FromRoute]int id) =>
-        ApiResult(await query.GetByWorkflow(id));
 }
