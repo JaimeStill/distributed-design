@@ -26,10 +26,6 @@ where TCommand : ICommand<T>
         ApiResult(await baseQuery.GetById(id));
 
     [HttpPost("[action]")]
-    public virtual async Task<IActionResult> ValidateValue([FromBody]T entity) =>
-        ApiResult(await baseCommand.ValidateValue(entity));
-
-    [HttpPost("[action]")]
     public virtual async Task<IActionResult> Validate([FromBody]T entity) =>
         ApiResult(await baseCommand.Validate(entity));
 

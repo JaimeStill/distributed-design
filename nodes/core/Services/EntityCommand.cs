@@ -141,24 +141,14 @@ where Db : DbContext
 
     #region Public
 
-    public virtual async Task<bool> ValidateValue(T entity) =>
-        !await db.Set<T>()
-            .AnyAsync(x =>
-                x.Id != entity.Id
-                && x.Value.ToLower() == entity.Value.ToLower()
-            );
-
-    public virtual async Task<ValidationMessage> Validate(T entity)
+    public virtual Task<ValidationMessage> Validate(T entity)
     {
         ValidationMessage result = new();
 
         if (string.IsNullOrWhiteSpace(entity.Value))
             result.AddMessage("Value is required");
 
-        if (!await ValidateValue(entity))
-            result.AddMessage("Value is already in use");
-
-        return result;
+        return Task.FromResult(result);
     }
 
     public async Task<ApiMessage<T>> Save(T entity)

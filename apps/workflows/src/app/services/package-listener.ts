@@ -5,11 +5,11 @@ import { environment } from '../../environments/environment';
 
 @Injectable()
 export class PackageListener extends EventListener<Package> {
-    onComplete: EventAction;
+    onStateChanged: EventAction;
 
     constructor() {
         super(`${environment.events}package/`);
 
-        this.onComplete = new EventAction('onComplete', this.connection);
+        this.onStateChanged = new EventAction('onStateChangedS', this.connection);
     }
 }

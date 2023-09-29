@@ -1,6 +1,6 @@
 export enum Statuses {
-    Created = 'Created',
     Active = 'Active',
+    Created = 'Created',
     Inactive = 'Inactive',
     Rejected = 'Rejected'
 }

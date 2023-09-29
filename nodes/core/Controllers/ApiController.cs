@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Distributed.Core.Controllers;
 public abstract class ApiController : ControllerBase
 {
+    protected IActionResult GatewayResult<T>(T? data) => Ok(data);
+
     protected IActionResult ApiResult<T>(T? data) => data switch
     {
         IApiMessage result => HandleApiResult(result),

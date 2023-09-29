@@ -18,7 +18,6 @@ namespace Workflows.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     State = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Intent = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Result = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EntityId = table.Column<int>(type: "int", nullable: false),
                     EntityType = table.Column<string>(type: "nvarchar(max)", nullable: false),

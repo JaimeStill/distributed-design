@@ -12,7 +12,7 @@ using Workflows.Data;
 namespace Workflows.Data.Migrations
 {
     [DbContext(typeof(WorkflowsContext))]
-    [Migration("20230926214845_Initial")]
+    [Migration("20230929172309_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -43,10 +43,6 @@ namespace Workflows.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("EntityType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Intent")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

@@ -1,8 +1,8 @@
 namespace Distributed.Contracts;
 public enum Statuses
 {
-    Created,
     Active,
+    Created,
     Inactive,
     Rejected
 }
