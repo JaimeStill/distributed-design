@@ -46,5 +46,6 @@ export class HomeRoute implements OnInit {
     this.packageListener.onAdd.set(this.sync);
     this.packageListener.onUpdate.set(this.sync);
     this.packageListener.onRemove.set(this.sync);
+    this.packageListener.onStateChanged.set(this.sync);
   }
 }
