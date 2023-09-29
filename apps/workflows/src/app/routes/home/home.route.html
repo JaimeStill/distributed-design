@@ -7,9 +7,22 @@
      flexCross="start">
     <div *ngFor="let package of packages"
          flexContainer
-         flexAlign="center"
-         flexCross="center"
-         class="rounded border-primary p4 m8">
-        <p class="m4">{{package.title}}</p>
+         flexDirection="column"
+         flexAlign="start"
+         flexCross="stretch"
+         class="rounded border-primary glow- p4 m8">
+        <div flexContainer
+             flexMain="space-between"
+             flexCross="center">
+             <p class="m4 mat-h4">{{package.title}}</p>
+            <p class="m4 mat-h4">{{package.id}}</p>
+        </div>
+        <div flexContainer
+             flexMain="space-between"
+             flexCross="center">
+            <p class="m4">State: {{package.state}}</p>
+            <p class="m4">Result: {{package.result}}</p>
+        </div>
+        <p class="m4">{{package.value}}</p>
     </div>
 </div>

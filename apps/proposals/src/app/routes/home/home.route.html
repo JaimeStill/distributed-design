@@ -1,1 +1,15 @@
 <p class="m8 mat-headline-5">Home</p>
+<p class="m8 mat-h3">Socket Connection: {{proposalListener?.status?.connectionId ?? 'Not Connected'}}</p>
+<p class="m8 mat-h3">Socket Status: {{proposalListener?.status?.state}}</p>
+<div *ngIf="proposals?.length > 0"
+     flexContainer
+     flexAlign="start"
+     flexCross="start">
+    <div *ngFor="let proposal of proposals"
+         flexContainer
+         flexAlign="center"
+         flexCross="center"
+         class="rounded border-primary p4 m8">
+        <p class="m4">{{proposal.title}}</p>
+    </div>
+</div>

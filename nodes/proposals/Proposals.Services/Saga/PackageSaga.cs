@@ -45,7 +45,10 @@ public class PackageSaga : EntitySaga<Package, ProposalsContext>
             {
                 db.Proposals.Attach(proposal);
                 proposal.PackageId = null;
-                await UpdateStatus(proposal, package);
+
+                if (package.State == PackageStates.Approved)
+                    await UpdateStatus(proposal, package);
+
                 await db.SaveChangesAsync();
             }
         }
