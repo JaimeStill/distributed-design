@@ -38,11 +38,16 @@ public class WorkflowsController : ApiController
 
     [HttpPost("[action]")]
     public async Task<IActionResult> SubmitPackage(
-        [FromBody]Package package
+        [FromBody] Package package
     ) => ApiResult(await gateway.SubmitPackage(package));
 
     [HttpPost("[action]")]
+    public async Task<IActionResult> ResubmitPackage(
+        [FromBody] Package package
+    ) => ApiResult(await gateway.ResubmitPackage(package));
+
+    [HttpPost("[action]")]
     public async Task<IActionResult> WithdrawPackage(
-        [FromBody]Package package
+        [FromBody] Package package
     ) => ApiResult(await gateway.WithdrawPackage(package));
 }

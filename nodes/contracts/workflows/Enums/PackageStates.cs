@@ -1,8 +1,8 @@
 namespace Workflows.Contracts;
 public enum PackageStates
 {
+    Approved,
     Pending,
-    Complete,
-    Returned,
-    Rejected
+    Rejected,
+    Returned
 }

@@ -85,7 +85,6 @@ The following section will demonstrate how the API facilitates real time data sy
     {
         "value": "string",
         "state": "Pending",
-        "intent": "Approve",
         "result": "Created",
         "entityId": 1,
         "entityType": "Proposals.Entities.Proposal",
@@ -132,7 +131,6 @@ Sagas and Event Listeners work great for reacting to changes in data exposed thr
     {
         "value": "string",
         "state": "Pending",
-        "intent": "Approve",
         "result": "Created",
         "entityId": 1,
         "entityType": "Proposals.Entities.Proposal",

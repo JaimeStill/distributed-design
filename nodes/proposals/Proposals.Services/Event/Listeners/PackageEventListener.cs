@@ -6,14 +6,14 @@ using Workflows.Contracts;
 namespace Proposals.Services;
 public class PackageEventListener : EventListener<Package, PackageSaga>, IPackageEventListener
 {
-    public EventAction OnComplete { get; }
+    public EventAction OnStateChanged { get; }
     public PackageEventListener(IServiceProvider provider, IConfiguration config)
     : base(
         provider,
         config.GetEventEndpoint("Package")
     )
     {
-        OnComplete = new("OnComplete", connection);
+        OnStateChanged = new("OnStateChanged", connection);
 
         OnAdd.Set(
             HandleEvent(async (EventMessage<Package> message, PackageSaga saga) =>
@@ -26,11 +26,17 @@ public class PackageEventListener : EventListener<Package, PackageSaga>, IPackag
                 await saga.OnRemove(message.Data)
             )
         );
+
+        OnStateChanged.Set(
+            HandleEvent(async (EventMessage<Package> message, PackageSaga saga) =>
+                await saga.OnStateChanged(message.Data)
+            )
+        );
     }
 
     protected override void DisposeEvents()
     {
         base.DisposeEvents();
-        OnComplete.Dispose();
+        OnStateChanged.Dispose();
     }
 }

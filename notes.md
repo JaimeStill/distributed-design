@@ -16,6 +16,8 @@
 
 ## Gateway Example
 
+> When writing a `GatewayController`, methods should return `GatewayResult` vs. `ApiResult`. This will ensure that the intended value is delivered and the result can be processed by the node executing the endpoint.
+
 Demonstrated withdrawing the active `Package` for a `Proposal` whenever the `Proposal` is removed.
 
 See: `ProposalCommand.AfterRemove`.
@@ -639,10 +641,6 @@ where TCommand : ICommand<T>
     [HttpGet("[action]/{id:int}")]
     public virtual async Task<IActionResult> GetFromId([FromRoute]int id) =>
         ApiResult(await baseQuery.GetById(id));
-
-    [HttpPost("[action]")]
-    public virtual async Task<IActionResult> ValidateValue([FromBody]T entity) =>
-        ApiResult(await baseCommand.ValidateValue(entity));
 
     [HttpPost("[action]")]
     public virtual async Task<IActionResult> Validate([FromBody]T entity) =>

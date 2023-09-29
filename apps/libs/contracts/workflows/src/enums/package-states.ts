@@ -1,6 +1,6 @@
 export enum PackageStates {
+    Approved = 'Approved',
     Pending = 'Pending',
-    Complete = 'Complete',
-    Returned = 'Returned',
-    Rejected = 'Rejected'
+    Rejected = 'Rejected',
+    Returned = 'Returned'
 }

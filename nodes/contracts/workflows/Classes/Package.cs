@@ -7,8 +7,7 @@ namespace Workflows.Contracts;
 [Table("Package")]
 public class Package : Entity
 {
-    public PackageStates State { get; set; }
-    public Intents Intent { get; set; }
+    public PackageStates State { get; set; } = PackageStates.Pending;
     public Statuses Result { get; set; } = Statuses.Active;
     public int EntityId { get; set; }
     public string EntityType { get; set; } = string.Empty;

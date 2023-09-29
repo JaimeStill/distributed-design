@@ -23,29 +23,33 @@ public class GatewayController : GatewayControllerBase
     [HttpGet("[action]/{entityType}")]
     public async Task<IActionResult> GetPackagesByType(
         [FromRoute] string entityType
-    ) => ApiResult(await packageQuery.GetByType(entityType));
+    ) => GatewayResult(await packageQuery.GetByType(entityType));
 
     [HttpGet("[action]/{id:int}/{entityType}")]
     public async Task<IActionResult> GetPackagesByEntity(
         [FromRoute] int id,
         [FromRoute] string entityType
-    ) => ApiResult(await packageQuery.GetByEntity(id, entityType));
+    ) => GatewayResult(await packageQuery.GetByEntity(id, entityType));
 
     [HttpGet("[action]/{id:int}/{entityType}")]
     public async Task<IActionResult> GetActivePackage(
         [FromRoute] int id,
         [FromRoute] string entityType
-    ) => ApiResult(await packageQuery.GetActivePackage(id, entityType));
+    ) => GatewayResult(await packageQuery.GetActivePackage(id, entityType));
 
     [HttpPost("[action]")]
     public async Task<IActionResult> ValidatePackage([FromBody] Package package) =>
-        ApiResult(await packageCommand.Validate(package));
+        GatewayResult(await packageCommand.Validate(package));
 
     [HttpPost("[action]")]
     public async Task<IActionResult> SubmitPackage([FromBody] Package package) =>
-        ApiResult(await packageCommand.Save(package));
+        GatewayResult(await packageCommand.Save(package));
+
+    [HttpPost("[action]")]
+    public async Task<IActionResult> ResubmitPackage([FromBody] Package package) =>
+        GatewayResult(await packageCommand.ResubmitPackage(package));
 
     [HttpPost("[action]")]
     public async Task<IActionResult> WithdrawPackage([FromBody] Package package) =>
-        ApiResult(await packageCommand.Remove(package));
+        GatewayResult(await packageCommand.Remove(package));
 }
