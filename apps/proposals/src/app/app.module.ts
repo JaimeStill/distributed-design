@@ -17,6 +17,7 @@ import { ToolkitModule } from '@distributed/toolkit';
 import { CdkModule } from './cdk.module';
 import { MaterialModule } from './material.module';
 import { AppComponent } from './app.component';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,10 @@ import { AppComponent } from './app.component';
     HttpClientModule,
     CdkModule,
     MaterialModule,
-    ToolkitModule,
+    ToolkitModule.forRoot({
+      PackageApiUrl: environment.packageApi,
+      PackageEventsUrl: environment.packageEvents
+    }),
     RouterModule.forRoot(Routes)
   ],
   providers: [],

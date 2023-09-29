@@ -14,6 +14,10 @@
 * Gateway Example
 * Saga + EventListener Example
 
+## Library-based Contract Event Listeners
+
+Document the process of creating contract-based event listeners within a library that can be imported within separate apps.
+
 ## Gateway Example
 
 > When writing a `GatewayController`, methods should return `GatewayResult` vs. `ApiResult`. This will ensure that the intended value is delivered and the result can be processed by the node executing the endpoint.

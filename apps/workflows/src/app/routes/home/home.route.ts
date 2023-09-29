@@ -6,10 +6,10 @@ import {
 
 import {
   PackageListener,
-  PackageQuery
-} from '../../services';
+  PackageQuery,
+  SnackerService
+} from '@distributed/toolkit';
 
-import { SnackerService } from '@distributed/toolkit';
 import { Package } from '@workflows/contracts';
 
 @Component({
