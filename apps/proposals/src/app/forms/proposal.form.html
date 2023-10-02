@@ -1,0 +1,24 @@
+<ng-container *ngIf="form">
+    <form [formGroup]="form">
+        <div flexContainer
+             flexDirection="column"
+             flexMain="start"
+             flexCross="stretch">
+            <mat-form-field class="my4">
+                <mat-label>Title</mat-label>
+                <input matInput
+                       formControlName="title">
+                <mat-error *ngIf="title?.errors">Title is required</mat-error>
+            </mat-form-field>
+            <mat-form-field class="my4">
+                <mat-label>Value</mat-label>
+                <textarea matInput
+                          formControlName="value"
+                          cdkTextareaAutosize
+                          [cdkAutosizeMinRows]="4"
+                          [cdkAutosizeMaxRows]="8"></textarea>
+                <mat-error *ngIf="value?.errors">Value is required</mat-error>
+            </mat-form-field>
+        </div>
+    </form>
+</ng-container>

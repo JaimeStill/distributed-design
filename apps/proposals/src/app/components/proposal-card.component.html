@@ -1,0 +1,53 @@
+<div flexContainer
+     flexDirection="column"
+     flexMain="start"
+     flexCross="stretch"
+     [ngClass]="cardStyle"
+     [style.width.px]="size">
+    <action-card orientation="bottom"
+                 cardStyle="rounded-top"
+                 actionPadding="inherit"
+                 [roundActions]="!showDetails">
+        <proposal-display cardStyle="p4"
+                          [proposal]="proposal"></proposal-display>
+        <ng-container *ngIf="showActions"
+                      ngProjectAs="actions">
+            <button mat-icon-button
+                    color="warn"
+                    (click)="remove.emit(proposal)">
+                <mat-icon matTooltip="Remove Proposal"
+                          [matTooltipPosition]="tooltipLocation">delete</mat-icon>
+            </button>
+            <button mat-icon-button
+                    (click)="edit.emit(proposal)">
+                <mat-icon matTooltip="Edit Proposal"
+                          [matTooltipPosition]="tooltipLocation">edit</mat-icon>
+            </button>
+        </ng-container>
+    </action-card>
+    <ng-container *ngIf="showDetails">
+        <mat-accordion multi
+                       displayMode="flat"
+                       class="rounded-bottom">
+            <mat-expansion-panel class="mat-elevation-z0">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>Status</mat-panel-title>
+                </mat-expansion-panel-header>
+                <div>Status</div>
+            </mat-expansion-panel>
+            <mat-expansion-panel *ngIf="proposal.packageId"
+                                 class="mat-elevation-z0">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>Active Package</mat-panel-title>
+                </mat-expansion-panel-header>
+                <div>Active Package</div>
+            </mat-expansion-panel>
+            <mat-expansion-panel class="mat-elevation-z0">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>Package History</mat-panel-title>
+                </mat-expansion-panel-header>
+                <div>Package History</div>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </ng-container>
+</div>

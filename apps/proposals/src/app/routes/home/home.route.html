@@ -1,15 +1,21 @@
-<p class="m8 mat-headline-5">Home</p>
+<div flexContainer
+     flexMain="start"
+     flexCross="center">
+    <button mat-icon-button
+            color="primary"
+            matTooltip="Create Proposal"
+            (click)="createProposal()">
+        <mat-icon>add_circle_outline</mat-icon>
+    </button>
+    <p class="m8 mat-headline-5">Home</p>
+</div>
 <p class="m8 mat-h3">Socket Connection: {{proposalListener?.status?.connectionId ?? 'Not Connected'}}</p>
 <p class="m8 mat-h3">Socket Status: {{proposalListener?.status?.state}}</p>
 <div *ngIf="proposals?.length > 0"
      flexContainer
      flexAlign="start"
      flexCross="start">
-    <div *ngFor="let proposal of proposals"
-         flexContainer
-         flexAlign="center"
-         flexCross="center"
-         class="rounded border-primary p4 m8">
-        <p class="m4">{{proposal.title}}</p>
-    </div>
+    <proposal-card *ngFor="let proposal of proposals"
+                   [proposal]="proposal"
+                   (edit)="editProposal($event)"></proposal-card>
 </div>

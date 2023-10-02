@@ -1,0 +1,14 @@
+<div flexContainer
+     [flexDirection]="layout"
+     [ngClass]="cardStyle"
+     [style.width.px]="size">
+    <div flexContainer
+         [flexDirection]="actionLayout"
+         [flexCross]="cross"
+         [flexMain]="main"
+         [ngClass]="computedStyle"
+         [style.padding.px]="actionPadding">
+        <ng-content select="actions" />
+    </div>
+    <ng-content />
+</div>

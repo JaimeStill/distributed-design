@@ -4,28 +4,46 @@ import {
 } from '@angular/core';
 
 import {
+  ConfirmDialog,
+  SnackerService
+} from '@distributed/toolkit';
+
+import { MatDialog } from '@angular/material/dialog';
+
+import {
+  ProposalCommand,
   ProposalListener,
   ProposalQuery
 } from '../../services';
 
-import { SnackerService } from '@distributed/toolkit';
+import { ProposalDialog } from '../../dialogs';
 import { Proposal } from '../../models';
 
 @Component({
   selector: 'home-route',
   templateUrl: 'home.route.html',
   providers: [
+    ProposalCommand,
     ProposalListener,
     ProposalQuery
   ]
 })
 export class HomeRoute implements OnInit {
+  private dialogOptions = {
+    disableClose: true,
+    width: '80%',
+    minWidth: 420,
+    maxWidth: 800
+  }
+
   proposals: Proposal[] | null;
 
   constructor(
+    private dialog: MatDialog,
+    private proposalCommand: ProposalCommand,
     private proposalQuery: ProposalQuery,
-    public proposalListener: ProposalListener,
-    private snacker: SnackerService
+    private snacker: SnackerService,
+    public proposalListener: ProposalListener
   ) { }
 
   private refresh = async () =>
@@ -46,4 +64,13 @@ export class HomeRoute implements OnInit {
     this.proposalListener.onUpdate.set(this.sync);
     this.proposalListener.onRemove.set(this.sync);
   }
+
+  private openProposalDialog = (proposal: Proposal) => this.dialog.open(ProposalDialog, {
+    data: proposal,
+    ...this.dialogOptions
+  });
+
+  createProposal = () => this.openProposalDialog(<Proposal>{});
+
+  editProposal = (proposal: Proposal) => this.openProposalDialog(proposal);
 }

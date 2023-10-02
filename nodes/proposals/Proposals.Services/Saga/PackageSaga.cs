@@ -1,5 +1,6 @@
 using Distributed.Contracts;
 using Distributed.Core.Services;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Proposals.Data;
 using Proposals.Entities;
@@ -8,8 +9,14 @@ using Workflows.Contracts;
 namespace Proposals.Services;
 public class PackageSaga : EntitySaga<Package, ProposalsContext>
 {
-    public PackageSaga(ProposalsContext db) : base(db)
-    { }
+    readonly IHubContext<ProposalEventHub, IProposalEventHub> proposalEvents;
+    public PackageSaga(
+        ProposalsContext db,
+        IHubContext<ProposalEventHub, IProposalEventHub> proposalEvents
+    ) : base(db)
+    {
+        this.proposalEvents = proposalEvents;
+    }
 
     public async Task OnAdd(Package package)
     {
@@ -20,6 +27,8 @@ public class PackageSaga : EntitySaga<Package, ProposalsContext>
             db.Proposals.Attach(proposal);
             proposal.PackageId = package.Id;
             await db.SaveChangesAsync();
+            
+            await SendProposalEvent(proposal, "updated");
         }
     }
 
@@ -32,6 +41,8 @@ public class PackageSaga : EntitySaga<Package, ProposalsContext>
             db.Proposals.Attach(proposal);
             proposal.PackageId = null;
             await db.SaveChangesAsync();
+
+            await SendProposalEvent(proposal, "updated");
         }
     }
 
@@ -50,8 +61,31 @@ public class PackageSaga : EntitySaga<Package, ProposalsContext>
                     await UpdateStatus(proposal, package);
 
                 await db.SaveChangesAsync();
+
+                await SendProposalEvent(proposal, "updated");
             }
         }
+    }
+
+    async Task SendProposalEvent(Proposal proposal, string action)
+    {
+
+        EventMessage<Proposal> message = GenerateMessage(proposal, action);
+
+        await proposalEvents
+            .Clients
+            .All
+            .OnUpdate(message);
+    }
+
+    static EventMessage<Proposal> GenerateMessage(Proposal proposal, string action)
+    {
+        EventMessage<Proposal> message = new(
+            proposal,
+            $"Proposal successfully {action}"
+        );
+
+        return message;
     }
 
     async Task UpdateStatus(Proposal proposal, Package package)
