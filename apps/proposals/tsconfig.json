@@ -25,6 +25,9 @@
     "paths": {
       "@distributed/core": [
         "node_modules/@distributed/core/dist/*"
+      ],
+      "@workflows/contracts": [
+        "node_modules/@workflows/contracts/dist/*"
       ]
     }
   },

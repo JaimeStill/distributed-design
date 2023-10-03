@@ -15,7 +15,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@angular/common": "^16.2.5",
+    "@angular/common": "^16.2.7",
     "@microsoft/signalr": "^7.0.11",
     "rxjs": "^7.8.1"
   }

@@ -33,7 +33,7 @@ where TCommand : ICommand<T>
     public virtual async Task<IActionResult> Save([FromBody]T entity) =>
         ApiResult(await baseCommand.Save(entity));
 
-    [HttpPost("[action]")]
+    [HttpDelete("[action]")]
     public virtual async Task<IActionResult> Remove([FromBody]T entity) =>
         ApiResult(await baseCommand.Remove(entity));
 }

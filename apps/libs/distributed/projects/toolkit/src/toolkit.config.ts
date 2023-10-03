@@ -1,4 +1,5 @@
 export interface ToolkitConfig {
     PackageApiUrl: string,
-    PackageEventsUrl: string
+    PackageEventsUrl: string,
+    WorkflowsGatewayUrl: string
 }

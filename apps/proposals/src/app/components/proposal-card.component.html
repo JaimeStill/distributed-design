@@ -9,7 +9,8 @@
                  actionPadding="inherit"
                  [roundActions]="!showDetails">
         <proposal-display cardStyle="p4"
-                          [proposal]="proposal"></proposal-display>
+                          [proposal]="proposal"
+                          [status]="status"></proposal-display>
         <ng-container *ngIf="showActions"
                       ngProjectAs="actions">
             <button mat-icon-button
@@ -17,6 +18,13 @@
                     (click)="remove.emit(proposal)">
                 <mat-icon matTooltip="Remove Proposal"
                           [matTooltipPosition]="tooltipLocation">delete</mat-icon>
+            </button>
+            <button *ngIf="canSubmit()"
+                    color="accent"
+                    mat-icon-button
+                    (click)="submit.emit(proposal)">
+                <mat-icon matTooltip="Submit Package"
+                          [matTooltipPosition]="tooltipLocation">start</mat-icon>
             </button>
             <button mat-icon-button
                     (click)="edit.emit(proposal)">
@@ -26,28 +34,14 @@
         </ng-container>
     </action-card>
     <ng-container *ngIf="showDetails">
-        <mat-accordion multi
-                       displayMode="flat"
-                       class="rounded-bottom">
-            <mat-expansion-panel class="mat-elevation-z0">
-                <mat-expansion-panel-header>
-                    <mat-panel-title>Status</mat-panel-title>
-                </mat-expansion-panel-header>
-                <div>Status</div>
-            </mat-expansion-panel>
-            <mat-expansion-panel *ngIf="proposal.packageId"
-                                 class="mat-elevation-z0">
-                <mat-expansion-panel-header>
-                    <mat-panel-title>Active Package</mat-panel-title>
-                </mat-expansion-panel-header>
-                <div>Active Package</div>
-            </mat-expansion-panel>
-            <mat-expansion-panel class="mat-elevation-z0">
-                <mat-expansion-panel-header>
-                    <mat-panel-title>Package History</mat-panel-title>
-                </mat-expansion-panel-header>
-                <div>Package History</div>
-            </mat-expansion-panel>
-        </mat-accordion>
+        <ng-container *ngIf="package">
+            <p class="m8 mat-h4">Active Package</p>
+            <package-display [package]="package"></package-display>
+        </ng-container>
+        <ng-container *ngIf="packages?.length > 0">
+            <p class="m8 mat-h4">Package History</p>
+            <package-display *ngFor="let p of packages"
+                             [package]="p"></package-display>
+        </ng-container>
     </ng-container>
 </div>

@@ -1,0 +1,15 @@
+<div *ngIf="package"
+     flexContainer
+     flexDirection="column"
+     flexMain="stretch"
+     flexCross="stretch"
+     [ngClass]="cardStyle">
+    <div flexContainer
+         flexMain="space-between"
+         flexCross="center">
+        <p class="m4 mat-h4">{{package.id}} - {{package.title}}</p>
+        <p class="m4 mat-h4">{{package.state}}</p>
+    </div>
+    <p class="m4">Resulting Status: {{package.result}}</p>
+    <p class="m4">{{package.value}}</p>
+</div>

@@ -330,7 +330,12 @@ Configure the following settings in the following files:
             "architect": {
                 "build": {
                     "options": {
-                        "preserveSymlinks": true
+                        "preserveSymlinks": true,
+                        "sourceMap": {
+                            "scripts": true,
+                            "styles": true,
+                            "vendor": true
+                        }
                     }
                 }
             }

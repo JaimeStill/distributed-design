@@ -3,6 +3,7 @@ import {
     Input
 } from '@angular/core';
 
+import { Status } from '@distributed/contracts';
 import { Proposal } from '../models';
 
 @Component({
@@ -11,5 +12,6 @@ import { Proposal } from '../models';
 })
 export class ProposalDisplayComponent {
     @Input() proposal: Proposal;
+    @Input() status: Status;
     @Input() cardStyle: string = 'rounded';
 }

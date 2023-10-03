@@ -42,7 +42,8 @@ export class ToolkitModule {
       ngModule: ToolkitModule,
       providers: [
         { provide: 'packageApiUrl', useValue: config.PackageApiUrl },
-        { provide: 'packageEventsUrl', useValue: config.PackageEventsUrl }
+        { provide: 'packageEventsUrl', useValue: config.PackageEventsUrl },
+        { provide: 'workflowsGatewayUrl', useValue: config.WorkflowsGatewayUrl }
       ]
     }
   }

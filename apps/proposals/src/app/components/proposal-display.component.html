@@ -7,8 +7,8 @@
     <div flexContainer
          flexMain="space-between"
          flexCross="center">
-        <p class="m4 mat-h4">{{proposal.title}}</p>
-        <p class="m4 mat-h4">{{proposal.id}}</p>
+        <p class="m4 mat-h4">{{proposal.id}} - {{proposal.title}}</p>
+        <p class="m4 mat-h4">{{status?.value ?? 'No Status'}}</p>
     </div>
     <p class="m4">{{proposal.value}}</p>
 </div>

@@ -70,7 +70,21 @@ export class HomeRoute implements OnInit {
     ...this.dialogOptions
   });
 
-  createProposal = () => this.openProposalDialog(<Proposal>{});
+  create = () => this.openProposalDialog(<Proposal>{});
 
-  editProposal = (proposal: Proposal) => this.openProposalDialog(proposal);
+  edit = (proposal: Proposal) => this.openProposalDialog(proposal);
+
+  remove = (proposal: Proposal) => this.dialog.open(ConfirmDialog, {
+    disableClose: true,
+    autoFocus: false,
+    data: {
+      title: 'Remove Proposal',
+      content: `Are you sure you want to remove Proposal ${proposal.title}`
+    }
+  })
+  .afterClosed()
+  .subscribe(async (result: boolean) => {
+    if (result)
+      await this.proposalCommand.remove(proposal);
+  });
 }

@@ -14,8 +14,10 @@ public class PackageCommand : EntityCommand<Package, PackageEventHub, IPackageEv
 
     #region Public
 
-    public async Task<ApiMessage<Package>> ResubmitPackage(Package package) =>
-        await ChangeState(package, PackageStates.Pending);
+    public async Task<ApiMessage<Package>> SubmitPackage(Package package) =>
+        package.Id > 0
+            ? await ChangeState(package, PackageStates.Pending)
+            : await Save(package);
 
     public async Task<ApiMessage<Package>> ApprovePackage(Package package) =>
         await ChangeState(package, PackageStates.Approved);

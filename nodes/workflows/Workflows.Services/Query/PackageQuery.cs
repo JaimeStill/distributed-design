@@ -21,6 +21,10 @@ public class PackageQuery : EntityQuery<Package, WorkflowsContext>
             .Where(x =>
                 x.EntityId == id
                 && x.EntityType == entityType
+                && (
+                    x.State != PackageStates.Pending
+                    && x.State != PackageStates.Returned
+                )
             )
             .ToListAsync();
 

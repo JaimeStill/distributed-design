@@ -41,7 +41,8 @@ import { Forms } from './forms';
     MaterialModule,
     ToolkitModule.forRoot({
       PackageApiUrl: environment.packageApi,
-      PackageEventsUrl: environment.packageEvents
+      PackageEventsUrl: environment.packageEvents,
+      WorkflowsGatewayUrl: environment.workflowsGateway
     }),
     RouterModule.forRoot(Routes)
   ],

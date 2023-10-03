@@ -4,7 +4,7 @@
     <button mat-icon-button
             color="primary"
             matTooltip="Create Proposal"
-            (click)="createProposal()">
+            (click)="create()">
         <mat-icon>add_circle_outline</mat-icon>
     </button>
     <p class="m8 mat-headline-5">Home</p>
@@ -17,5 +17,6 @@
      flexCross="start">
     <proposal-card *ngFor="let proposal of proposals"
                    [proposal]="proposal"
-                   (edit)="editProposal($event)"></proposal-card>
+                   (edit)="edit($event)"
+                   (remove)="remove($event)"></proposal-card>
 </div>
