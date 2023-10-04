@@ -1,8 +1,4 @@
-import {
-    Component,
-    Input
-} from '@angular/core';
-
+import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { StorageForm } from '@distributed/toolkit';
 import { ProposalCommand } from '../services';

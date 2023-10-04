@@ -1,0 +1,47 @@
+<ng-container *ngIf="form">
+    <form [formGroup]="form">
+        <div flexContainer
+             flexDirection="column"
+             flexMain="start"
+             flexCross="stretch">
+            <mat-form-field class="my4">
+                <mat-label>Title</mat-label>
+                <input matInput
+                       formControlName="title">
+                <mat-error *ngIf="title?.errors">Title is required</mat-error>
+            </mat-form-field>
+            <mat-form-field class="my4">
+                <mat-label>Entity ID</mat-label>
+                <input matInput
+                       formControlName="entityId"
+                       type="number"
+                       min="1">
+                <mat-error *ngIf="entityId?.errors">Entity ID is required and must be larger than 0</mat-error>
+            </mat-form-field>
+            <mat-form-field class="my4">
+                <mat-label>Entity Type</mat-label>
+                <input matInput
+                       formControlName="entityType">
+                <mat-error *ngIf="entityType?.errors">Entity Type is required</mat-error>
+            </mat-form-field>
+            <mat-form-field class="my4">
+                <mat-label>Resulting Status</mat-label>
+                <mat-select formControlName="result">
+                    <mat-option *ngFor="let status of statuses"
+                                [value]="status">
+                        {{status}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field class="my4">
+                <mat-label>Value</mat-label>
+                <textarea matInput
+                          formControlName="value"
+                          cdkTextareaAutosize
+                          [cdkAutosizeMinRows]="4"
+                          [cdkAutosizeMaxRows]="8"></textarea>
+                <mat-error *ngIf="value?.errors">Value is required</mat-error>
+            </mat-form-field>
+        </div>
+    </form>
+</ng-container>

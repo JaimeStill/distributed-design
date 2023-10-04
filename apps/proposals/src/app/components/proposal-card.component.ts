@@ -16,7 +16,7 @@ import { EventMessage } from '@distributed/core';
 import { Package, PackageStates } from '@workflows/contracts';
 import { Proposal } from '../models';
 import { ProposalQuery } from '../services';
-import { Status } from '@distributed/contracts';
+import { Status, Statuses } from '@distributed/contracts';
 
 @Component({
     selector: 'proposal-card',
@@ -41,7 +41,8 @@ export class ProposalCardComponent implements OnInit {
     @Input() showDetails: boolean = true;
 
     @Output() edit = new EventEmitter<Proposal>();
-    @Output() submit = new EventEmitter<Proposal>();
+    @Output() submit = new EventEmitter<Package>();
+    @Output() withdraw = new EventEmitter<Package>();
     @Output() remove = new EventEmitter<Proposal>();
 
     constructor(
@@ -96,4 +97,21 @@ export class ProposalCardComponent implements OnInit {
     canSubmit = (): boolean =>
         this.package === null
         || this.package.state === PackageStates.Returned;
+
+    canWithdraw = (): boolean =>
+        !this.canSubmit()
+        && this.package !== null;
+
+    submitPackage() {
+        const pkg = this.package?.id > 0
+            ? this.package
+            : <Package>{
+                state: PackageStates.Pending,
+                result: Statuses.Active,
+                entityId: this.proposal.id,
+                entityType: this.proposal.type
+            }
+
+        this.submit.emit(pkg);
+    }
 }

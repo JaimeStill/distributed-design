@@ -15,21 +15,32 @@
                       ngProjectAs="actions">
             <button mat-icon-button
                     color="warn"
+                    matTooltip="Remove Proposal"
+                    [matTooltipPosition]="tooltipLocation"
                     (click)="remove.emit(proposal)">
-                <mat-icon matTooltip="Remove Proposal"
-                          [matTooltipPosition]="tooltipLocation">delete</mat-icon>
+                <mat-icon>delete</mat-icon>
             </button>
             <button *ngIf="canSubmit()"
                     color="accent"
                     mat-icon-button
-                    (click)="submit.emit(proposal)">
-                <mat-icon matTooltip="Submit Package"
-                          [matTooltipPosition]="tooltipLocation">start</mat-icon>
+                    matTooltip="Submit Package"
+                    [matTooltipPosition]="tooltipLocation"
+                    (click)="submitPackage()">
+                <mat-icon>start</mat-icon>
+            </button>
+            <button *ngIf="canWithdraw()"
+                    color="warn"
+                    mat-icon-button
+                    matTooltip="Withdraw Package"
+                    [matTooltipPosition]="tooltipLocation"
+                    (click)="withdraw.emit(package)">
+                <mat-icon>undo</mat-icon>
             </button>
             <button mat-icon-button
+                    matTooltip="Edit Proposal"
+                    [matTooltipPosition]="tooltipLocation"
                     (click)="edit.emit(proposal)">
-                <mat-icon matTooltip="Edit Proposal"
-                          [matTooltipPosition]="tooltipLocation">edit</mat-icon>
+                <mat-icon>edit</mat-icon>
             </button>
         </ng-container>
     </action-card>

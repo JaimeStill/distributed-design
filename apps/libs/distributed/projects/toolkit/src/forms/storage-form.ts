@@ -15,8 +15,8 @@ import {
 
 import {
     Entity,
-    EntityCommand,
-    IStorage
+    IStorage,
+    IStorageService
 } from '@distributed/core';
 
 interface StoredControl {
@@ -39,7 +39,7 @@ export abstract class StorageForm<T extends Entity> implements OnChanges {
     constructor(
         protected fb: FormBuilder,
         protected generator: (e: T, fb: FormBuilder) => FormGroup,
-        public api: EntityCommand<T>
+        public api: IStorageService<T>
     ) { }
 
     protected registerControl = (key: string, control: FormControl) =>

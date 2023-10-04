@@ -18,5 +18,7 @@
     <proposal-card *ngFor="let proposal of proposals"
                    [proposal]="proposal"
                    (edit)="edit($event)"
+                   (submit)="submit($event)"
+                   (withdraw)="withdraw($event)"
                    (remove)="remove($event)"></proposal-card>
 </div>

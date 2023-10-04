@@ -11,6 +11,7 @@ import { MaterialModule } from './material.module';
 import { Components } from './components';
 import { Dialogs } from './dialogs';
 import { Directives } from './directives';
+import { Forms } from './forms';
 import { Pipes } from './pipes';
 import { ToolkitConfig } from './toolkit.config';
 
@@ -21,6 +22,7 @@ import { ToolkitConfig } from './toolkit.config';
     ...Components,
     ...Dialogs,
     ...Directives,
+    ...Forms,
     ...Pipes
   ],
   imports: [
@@ -33,6 +35,7 @@ import { ToolkitConfig } from './toolkit.config';
     ...Components,
     ...Dialogs,
     ...Directives,
+    ...Forms,
     ...Pipes
   ]
 })

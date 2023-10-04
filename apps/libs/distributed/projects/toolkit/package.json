@@ -8,6 +8,7 @@
     "@angular/forms": "^16.2.7",
     "@angular/material": "^16.2.6",
     "@angular/platform-browser": "^16.2.5",
+    "@distributed/contracts": "file../contracts/core",
     "@distributed/core": "file:../../../core",
     "@workflows/contracts": "file:../contracts/workflows",
     "rxjs": "~7.8.0"
