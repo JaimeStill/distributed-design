@@ -13,10 +13,11 @@ import {
 import { Entity } from '../entities';
 import { ApiService } from './api-service';
 import { ISnacker } from './i-snacker';
+import { IStorageService } from './i-storage-service';
 import { ValidationMessage } from '../messages';
 import { Strings } from '../utils';
 
-export abstract class EntityCommand<T extends Entity> extends ApiService {
+export abstract class EntityCommand<T extends Entity> extends ApiService implements IStorageService<T> {
     protected storagepoint: string;
 
     constructor(

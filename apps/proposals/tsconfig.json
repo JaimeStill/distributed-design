@@ -23,6 +23,9 @@
       "dom"
     ],
     "paths": {
+      "@distributed/contracts": [
+        "node_modules/@distributed/contracts/dist/*"
+      ],
       "@distributed/core": [
         "node_modules/@distributed/core/dist/*"
       ],

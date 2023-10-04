@@ -1,7 +1,10 @@
-import { ConfirmDialog } from './confirm';
+import { ConfirmDialog } from './confirm.dialog';
+import { PackageDialog } from './package.dialog';
 
 export const Dialogs = [
-    ConfirmDialog
+    ConfirmDialog,
+    PackageDialog
 ];
 
-export * from './confirm';
+export * from './confirm.dialog';
+export * from './package.dialog';

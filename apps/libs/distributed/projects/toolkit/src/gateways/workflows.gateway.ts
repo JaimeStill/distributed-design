@@ -5,6 +5,10 @@ import {
 
 import {
     ApiService,
+    IStorage,
+    IStorageService,
+    SessionStorage,
+    Strings,
     ValidationMessage
 } from '@distributed/core';
 
@@ -14,17 +18,21 @@ import { Package } from '@workflows/contracts';
 import { SnackerService } from '../services';
 
 @Injectable()
-export class WorkflowsGateway extends ApiService {    
+export class WorkflowsGateway extends ApiService implements IStorageService<Package> {    
+    protected storagepoint: string;
+
     constructor(
         @Inject('workflowsGatewayUrl') private endpoint: string,
         http: HttpClient,
         snacker: SnackerService
     )
     {
+        super(http, snacker);
+
         if (!endpoint.endsWith('/'))
             endpoint = `${endpoint}/`;
 
-        super(http, snacker);
+        this.storagepoint = Strings.dasherize(endpoint);
     }
 
     protected getPackagesByType$ = (entityType: string) =>
@@ -35,6 +43,14 @@ export class WorkflowsGateway extends ApiService {
 
     protected getActivePackage$ = (id: number, entityType: string) =>
         this.http.get<Package>(`${this.endpoint}getActivePackage/${id}/${entityType}`);
+
+    generateStorage(pkg: Package): IStorage<Package> {
+        return new SessionStorage<Package>(
+            pkg.id
+                ? `${this.storagepoint}-${pkg.id}`
+                : `${this.storagepoint}-new`
+        );
+    }
 
     getPackagesByType(entityType: string) {
         return firstValueFrom(
@@ -62,4 +78,6 @@ export class WorkflowsGateway extends ApiService {
 
     withdrawPackage = async (pkg: Package): Promise<number> =>
         await this.apiPost(`${this.endpoint}withdrawPackage`, pkg);
+
+    save = this.submitPackage;
 }

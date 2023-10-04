@@ -61,6 +61,7 @@ npm link
 
 # in consuming project
 npm link [package]
+npm i [path-to-package-dist] # ../libs/distributed/dist/toolkit/
 
 # list all globally linked packages
 npm ls -g --depth=0 --link=true
@@ -69,7 +70,7 @@ npm ls -g --depth=0 --link=true
 npm unlink -g [package]
 ```
 
-In `tsconfig.json`, ensure all linked libraries have `path` values that point to their `dist` folders to ensure proper change detection:
+In `tsconfig.json`, ensure all linked non-Angular libraries have `path` values that point to their `dist` folders to ensure proper change detection:
 
 ```json
 "paths": {

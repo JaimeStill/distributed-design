@@ -1,0 +1,30 @@
+<div class="mat-typography">
+    <h2 mat-dialog-title>
+        <span *ngIf="(pkg?.id ?? 0) > 0">Update Package</span>
+        <span *ngIf="!((pkg?.id ?? 0) > 0)">Add Package</span>
+    </h2>
+    <mat-dialog-content>
+        <package-form #editor
+                      [data]="pkg"
+                      (saved)="saved($event)"></package-form>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <button mat-stroked-button
+                color="primary"
+                [disabled]="editor.form.invalid || !(editor.storage.hasState())"
+                (click)="editor.save()">
+            Save Package
+        </button>
+        <button mat-stroked-button
+                color="accent"
+                [disabled]="!(editor.storage.hasState())"
+                (click)="editor.reset()">
+            Discard Changes
+        </button>
+        <button mat-stroked-button
+                color="warn"
+                mat-dialog-close>
+            Cancel
+        </button>
+    </mat-dialog-actions>
+</div>

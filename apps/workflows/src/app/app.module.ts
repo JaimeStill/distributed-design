@@ -34,7 +34,8 @@ import { environment } from '../environments/environment';
     MaterialModule,
     ToolkitModule.forRoot({
       PackageApiUrl: `${environment.api}package/`,
-      PackageEventsUrl: `${environment.events}package/`
+      PackageEventsUrl: `${environment.events}package/`,
+      WorkflowsGatewayUrl: environment.workflowsGateway
     }),
     RouterModule.forRoot(Routes)
   ],
