@@ -1,0 +1,14 @@
+<div *ngIf="proposal"
+     flexContainer
+     flexDirection="column"
+     flexMain="stretch"
+     flexCross="stretch"
+     [ngClass]="cardStyle">
+    <div flexContainer
+         flexMain="space-between"
+         flexCross="center">
+        <p class="m4 mat-h4">{{proposal.id}} - {{proposal.title}}</p>
+        <p class="m4 mat-h4">{{status?.value ?? 'No Status'}}</p>
+    </div>
+    <p class="m4">{{proposal.value}}</p>
+</div>

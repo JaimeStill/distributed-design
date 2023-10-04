@@ -13,6 +13,11 @@
 * SignalR Diagnostics
 * Gateway Example
 * Saga + EventListener Example
+* Saga EventHub Synchronization
+
+## Saga EventHub Synchronization
+
+Trigger events from within a Saga if internal data is mutated in reaction to external events. See PackageSaga in the proposals node.
 
 ## Library-based Contract Event Listeners
 
@@ -325,7 +330,12 @@ Configure the following settings in the following files:
             "architect": {
                 "build": {
                     "options": {
-                        "preserveSymlinks": true
+                        "preserveSymlinks": true,
+                        "sourceMap": {
+                            "scripts": true,
+                            "styles": true,
+                            "vendor": true
+                        }
                     }
                 }
             }

@@ -1,0 +1,30 @@
+<div class="mat-typography">
+    <h2 mat-dialog-title>
+        <span *ngIf="proposal?.id > 0">Update Proposal</span>
+        <span *ngIf="!(proposal?.id > 0)">Add Proposal</span>
+    </h2>
+    <mat-dialog-content>
+        <proposal-form #editor
+                       [data]="proposal"
+                       (saved)="saved($event)"></proposal-form>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <button mat-stroked-button
+                color="primary"
+                [disabled]="editor.form?.invalid || !(editor.storage?.hasState())"
+                (click)="editor.save()">
+            Save Proposal
+        </button>
+        <button mat-stroked-button
+                color="accent"
+                [disabled]="!(editor.storage?.hasState())"
+                (click)="editor.reset()">
+            Discard Changes
+        </button>
+        <button mat-stroked-button
+                color="warn"
+                mat-dialog-close>
+            Cancel
+        </button>
+    </mat-dialog-actions>
+</div>

@@ -25,9 +25,6 @@ public class WorkflowsGateway : GatewayClient
     public async Task<ApiMessage<Package>?> SubmitPackage(Package package) =>
         await Post<ApiMessage<Package>, Package>(package, "submitPackage");
 
-    public async Task<ApiMessage<Package>?> ResubmitPackage(Package package) =>
-        await Post<ApiMessage<Package>, Package>(package, "resubmitPackage");
-
     public async Task<ApiMessage<int>?> WithdrawPackage(Package package) =>
         await Post<ApiMessage<int>, Package>(package, "withdrawPackage");
 }

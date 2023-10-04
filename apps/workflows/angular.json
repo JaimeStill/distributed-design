@@ -21,6 +21,11 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "preserveSymlinks": true,
+            "sourceMap": {
+              "scripts": true,
+              "styles": true,
+              "vendor": true              
+            },
             "outputPath": "dist/workflows",
             "index": "src/index.html",
             "main": "src/main.ts",
