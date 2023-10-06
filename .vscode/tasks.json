@@ -29,69 +29,28 @@
             }
         },
         {
-            "label": "apps-build",
-            "dependsOn": [
-                "apps-core-build",
-                "apps-contracts-core-build",
-                "apps-contracts-workflows-build",
-                "apps-distributed-build"
-            ],
-            "dependsOrder": "sequence"
+            "label": "apps-clean",
+            "command": ".\\clean-apps.ps1",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/scripts"
+            }
         },
         {
-            "label": "apps-build-and-install",
+            "label": "apps-build",
             "dependsOn": [
-                "apps-install",
-                "apps-core-build",
-                "apps-contracts-core-build",
-                "apps-contracts-workflows-build",
-                "apps-distributed-build"
+                "libs-build",
+                "apps-install"
             ],
             "dependsOrder": "sequence"
         },
         {
             "label": "apps-install",
             "dependsOn": [
-                "apps-core-install",
-                "apps-contracts-core-install",
-                "apps-contracts-workflows-install",
-                "apps-distributed-install",
                 "apps-proposals-install",
                 "apps-workflows-install"
             ],
             "dependsOrder": "parallel"
-        },
-        {
-            "label": "apps-core-install",
-            "command": "npm i",
-            "type": "shell",
-            "options": {
-                "cwd": "${workspaceFolder}/apps/libs/core"
-            }
-        },
-        {
-            "label": "apps-contracts-core-install",
-            "command": "npm i",
-            "type": "shell",
-            "options": {
-                "cwd": "${workspaceFolder}/apps/libs/contracts/core"
-            }
-        },
-        {
-            "label": "apps-contracts-workflows-install",
-            "command": "npm i",
-            "type": "shell",
-            "options": {
-                "cwd": "${workspaceFolder}/apps/libs/contracts/workflows"
-            }
-        },
-        {
-            "label": "apps-distributed-install",
-            "command": "npm i",
-            "type": "shell",
-            "options": {
-                "cwd": "${workspaceFolder}/apps/libs/distributed"
-            }
         },
         {
             "label": "apps-proposals-install",
@@ -108,8 +67,31 @@
             "options": {
                 "cwd": "${workspaceFolder}/apps/workflows"
             }
-        },{
-            "label": "apps-core-build",
+        },
+        {
+            "label": "libs-build",
+            "dependsOn": [
+                "libs-core-install",
+                "libs-core-build",
+                "libs-contracts-core-install",
+                "libs-contracts-core-build",
+                "libs-contracts-workflows-install",
+                "libs-contracts-workflows-build",
+                "libs-distributed-install",
+                "libs-distributed-build"
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
+            "label": "libs-core-install",
+            "command": "npm i",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/apps/libs/core"
+            }
+        },
+        {
+            "label": "libs-core-build",
             "command": "npm run build",
             "type": "shell",
             "options": {
@@ -117,7 +99,15 @@
             }
         },
         {
-            "label": "apps-contracts-core-build",
+            "label": "libs-contracts-core-install",
+            "command": "npm i",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/apps/libs/contracts/core"
+            }
+        },
+        {
+            "label": "libs-contracts-core-build",
             "command": "npm run build",
             "type": "shell",
             "options": {
@@ -125,7 +115,15 @@
             }
         },
         {
-            "label": "apps-contracts-workflows-build",
+            "label": "libs-contracts-workflows-install",
+            "command": "npm i",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/apps/libs/contracts/workflows"
+            }
+        },
+        {
+            "label": "libs-contracts-workflows-build",
             "command": "npm run build",
             "type": "shell",
             "options": {
@@ -133,7 +131,15 @@
             }
         },
         {
-            "label": "apps-distributed-build",
+            "label": "libs-distributed-install",
+            "command": "npm i",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/apps/libs/distributed"
+            }
+        },
+        {
+            "label": "libs-distributed-build",
             "command": "npm run build",
             "type": "shell",
             "options": {
