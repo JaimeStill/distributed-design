@@ -18,11 +18,13 @@ import { CdkModule } from './cdk.module';
 import { MaterialModule } from './material.module';
 import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
+import { Components } from './components';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ...RouteComponents
+    ...RouteComponents,
+    ...Components
   ],
   imports: [
     BrowserModule,
