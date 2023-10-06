@@ -29,6 +29,14 @@
             }
         },
         {
+            "label": "apps-clean-and-build",
+            "dependsOn": [
+                "apps-clean",
+                "apps-build"
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
             "label": "apps-clean",
             "command": ".\\clean-apps.ps1",
             "type": "shell",

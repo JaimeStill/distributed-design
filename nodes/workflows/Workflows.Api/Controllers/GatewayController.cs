@@ -43,7 +43,7 @@ public class GatewayController : GatewayControllerBase
 
     [HttpPost("[action]")]
     public async Task<IActionResult> SubmitPackage([FromBody] Package package) =>
-        GatewayResult(await packageCommand.SubmitPackage(package));
+        GatewayResult(await packageCommand.Submit(package));
 
     [HttpPost("[action]")]
     public async Task<IActionResult> WithdrawPackage([FromBody] Package package) =>

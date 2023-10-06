@@ -82,7 +82,7 @@ public class PackageSaga : EntitySaga<Package, ProposalsContext>
     {
         EventMessage<Proposal> message = new(
             proposal,
-            $"Proposal successfully {action}"
+            $"Proposal {proposal.Title} successfully {action}"
         );
 
         return message;

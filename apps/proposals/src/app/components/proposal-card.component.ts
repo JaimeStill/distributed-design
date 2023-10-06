@@ -2,12 +2,18 @@ import {
     Component,
     EventEmitter,
     Input,
+    OnDestroy,
     OnInit,
     Output
 } from '@angular/core';
 
 import {
-    PackageListener,
+    Observable,
+    Subscription
+} from 'rxjs';
+
+import {
+    SnackerService,
     WorkflowsGateway
 } from '@distributed/toolkit';
 
@@ -30,12 +36,13 @@ import { ProposalQuery } from '../services';
     selector: 'proposal-card',
     templateUrl: 'proposal-card.component.html',
     providers: [
-        PackageListener,
         ProposalQuery,
         WorkflowsGateway
     ]
 })
-export class ProposalCardComponent implements OnInit {
+export class ProposalCardComponent implements OnInit, OnDestroy {
+    private sub: Subscription;
+
     package: Package | null = null;
     packages: Package[] | null = null;
     status: Status | null = null;
@@ -44,6 +51,7 @@ export class ProposalCardComponent implements OnInit {
     @Input() size: number | string = 360;
     @Input() cardStyle: string = 'm4 rounded border-divider background-card';
     @Input() tooltipLocation: TooltipPosition = 'below';
+    @Input() trigger: Observable<EventMessage<Package>>;
 
     @Input() showActions: boolean = true;
     @Input() showDetails: boolean = true;
@@ -54,8 +62,8 @@ export class ProposalCardComponent implements OnInit {
     @Output() remove = new EventEmitter<Proposal>();
 
     constructor(
-        public packageEvents: PackageListener,
         private proposalQuery: ProposalQuery,
+        private snacker: SnackerService,
         private workflowGwy: WorkflowsGateway
     ) { }
 
@@ -85,21 +93,25 @@ export class ProposalCardComponent implements OnInit {
             event.data
             && event.data.entityId === this.proposal.id
             && event.data.entityType === this.proposal.type
-        )
-        {
+        ) {
+            this.snacker.sendSuccessMessage(event.message);
             await this.loadPackage();
-            await this.loadPackages();            
+            await this.loadPackages();
         }
     }
 
     async ngOnInit(): Promise<void> {
-        await this.load();
-        await this.packageEvents.connect();
+        if (this.trigger) {
+            this.sub = this.trigger.subscribe((event: EventMessage<Package>) =>
+                this.handlePackageEvent(event)
+            );
+        }
 
-        this.packageEvents.onAdd.set(this.handlePackageEvent);
-        this.packageEvents.onUpdate.set(this.handlePackageEvent);
-        this.packageEvents.onRemove.set(this.handlePackageEvent);
-        this.packageEvents.onStateChanged.set(this.handlePackageEvent);
+        await this.load();
+    }
+
+    ngOnDestroy(): void {
+        this.sub?.unsubscribe();
     }
 
     canSubmit = (): boolean =>

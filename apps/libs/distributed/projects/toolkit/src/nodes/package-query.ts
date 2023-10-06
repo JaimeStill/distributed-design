@@ -19,6 +19,12 @@ export class PackageQuery extends EntityQuery<Package> {
         super(endpoint, http, snacker);
     }
 
+    protected getActive$ = () =>
+        this.http.get<Package[]>(`${this.api}getActive`);
+
+    protected getCompleted$ = () =>
+        this.http.get<Package[]>(`${this.api}getCompleted`);
+
     protected getByType$ = (entityType: string) =>
         this.http.get<Package[]>(`${this.api}getByType/${entityType}`);
 
@@ -27,6 +33,12 @@ export class PackageQuery extends EntityQuery<Package> {
 
     protected getActivePackage$ = (id: number, entityType: string) =>
         this.http.get<Package>(`${this.api}getActivePackage/${id}/${entityType}`);
+
+    getActive = () =>
+        firstValueFrom(this.getActive$());
+
+    getCompleted = () =>
+        firstValueFrom(this.getCompleted$());
 
     getByType = (entityType: string) =>
         firstValueFrom(this.getByType$(entityType));

@@ -17,6 +17,7 @@
      flexCross="start">
     <proposal-card *ngFor="let proposal of proposals"
                    [proposal]="proposal"
+                   [trigger]="trigger"
                    (edit)="edit($event)"
                    (submit)="submit($event)"
                    (withdraw)="withdraw($event)"

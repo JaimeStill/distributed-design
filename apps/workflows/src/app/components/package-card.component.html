@@ -9,7 +9,8 @@
                  actionPadding="inherit">
         <package-display cardStyle="p4"
                          [package]="package"></package-display>
-        <ng-container ngProjectAs="actions">
+        <ng-container *ngIf="actionsAvailable()"
+                      ngProjectAs="actions">
             <button mat-icon-button
                     color="warn"
                     matTooltip="Reject Package"

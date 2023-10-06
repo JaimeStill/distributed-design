@@ -4,8 +4,14 @@ import {
 } from '@angular/core';
 
 import {
+  BehaviorSubject,
+  Observable
+} from 'rxjs';
+
+import {
   ConfirmDialog,
   PackageDialog,
+  PackageListener,
   SnackerService,
   WorkflowsGateway
 } from '@distributed/toolkit';
@@ -18,15 +24,16 @@ import {
   ProposalQuery
 } from '../../services';
 
-import { ProposalDialog } from '../../dialogs';
-import { Proposal } from '../../models';
 import { EventMessage } from '@distributed/core';
 import { Package } from '@workflows/contracts';
+import { ProposalDialog } from '../../dialogs';
+import { Proposal } from '../../models';
 
 @Component({
   selector: 'home-route',
   templateUrl: 'home.route.html',
   providers: [
+    PackageListener,
     ProposalCommand,
     ProposalListener,
     ProposalQuery,
@@ -41,10 +48,15 @@ export class HomeRoute implements OnInit {
     maxWidth: 800
   }
 
+  private trigger$ = new BehaviorSubject<EventMessage<Package>>(null);
+
   proposals: Proposal[] | null;
+  trigger: Observable<EventMessage<Package>> = this.trigger$.asObservable();
+  
 
   constructor(
     private dialog: MatDialog,
+    private packageListener: PackageListener,
     private proposalCommand: ProposalCommand,
     private proposalQuery: ProposalQuery,
     private snacker: SnackerService,
@@ -52,23 +64,31 @@ export class HomeRoute implements OnInit {
     public proposalListener: ProposalListener
   ) { }
 
+  private sendTrigger = (event: EventMessage<Package>) =>
+    this.trigger$.next(event);
+
   private refresh = async () =>
     this.proposals = await this.proposalQuery.get();
 
   private snack = (message: string) => this.snacker.sendSuccessMessage(message);
 
-  private sync = (event: EventMessage<Proposal>) => {
+  private syncProposals = (event: EventMessage<Proposal>) => {
     this.snack(event.message);
     this.refresh();
   }
 
   async ngOnInit(): Promise<void> {
     this.refresh();
-    await this.proposalListener.connect();
+    await this.packageListener.connect();
+    this.packageListener.onAdd.set(this.sendTrigger);
+    this.packageListener.onUpdate.set(this.sendTrigger);
+    this.packageListener.onRemove.set(this.sendTrigger);
+    this.packageListener.onStateChanged.set(this.sendTrigger);
 
-    this.proposalListener.onAdd.set(this.sync);
-    this.proposalListener.onUpdate.set(this.sync);
-    this.proposalListener.onRemove.set(this.sync);
+    await this.proposalListener.connect();
+    this.proposalListener.onAdd.set(this.syncProposals);
+    this.proposalListener.onUpdate.set(this.syncProposals);
+    this.proposalListener.onRemove.set(this.syncProposals);
   }
 
   private openProposalDialog = (proposal: Proposal) => this.dialog.open(ProposalDialog, {

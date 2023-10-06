@@ -9,6 +9,22 @@ public class PackageQuery : EntityQuery<Package, WorkflowsContext>
     public PackageQuery(WorkflowsContext db) : base(db)
     { }
 
+    public async Task<List<Package>> GetActive() =>
+        await Set
+            .Where(x =>
+                x.State == PackageStates.Pending
+                || x.State == PackageStates.Returned
+            )
+            .ToListAsync();
+
+    public async Task<List<Package>> GetCompleted() =>
+        await Set
+            .Where(x =>
+                x.State != PackageStates.Pending
+                && x.State != PackageStates.Returned
+            )
+            .ToListAsync();
+
     public async Task<List<Package>> GetByType(string entityType) =>
         await Set
             .Where(x =>
