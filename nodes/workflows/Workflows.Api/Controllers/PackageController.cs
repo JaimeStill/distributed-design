@@ -18,6 +18,14 @@ public class PackageController : EntityController<Package, PackageQuery, Package
         this.command = command;
     }
 
+    [HttpGet("[action]")]
+    public async Task<IActionResult> GetActive() =>
+        ApiResult(await query.GetActive());
+
+    [HttpGet("[action]")]
+    public async Task<IActionResult> GetCompleted() =>
+        ApiResult(await query.GetCompleted());
+
     [HttpGet("[action]/{entityType}")]
     public async Task<IActionResult> GetByType(
         [FromRoute] string entityType
@@ -36,17 +44,17 @@ public class PackageController : EntityController<Package, PackageQuery, Package
     ) => ApiResult(await query.GetActivePackage(id, entityType));
 
     [HttpPost("[action]")]
-    public async Task<IActionResult> ApprovePackage(
+    public async Task<IActionResult> Approve(
         [FromBody] Package package
-    ) => ApiResult(await command.ApprovePackage(package));
+    ) => ApiResult(await command.Approve(package));
 
     [HttpPost("[action]")]
-    public async Task<IActionResult> RejectPackage(
+    public async Task<IActionResult> Reject(
         [FromBody] Package package
-    ) => ApiResult(await command.RejectPackage(package));
+    ) => ApiResult(await command.Reject(package));
 
     [HttpPost("[action]")]
-    public async Task<IActionResult> ReturnPackage(
+    public async Task<IActionResult> Return(
         [FromBody] Package package
-    ) => ApiResult(await command.ReturnPackage(package));
+    ) => ApiResult(await command.Return(package));
 }

@@ -17,4 +17,13 @@ export class PackageCommand extends EntityCommand<Package> {
     ) {
         super(endpoint, http, snacker);
     }
+
+    approve = async (pkg: Package): Promise<Package> =>
+        await this.apiPost(`${this.api}approve`, pkg);
+
+    return = async (pkg: Package): Promise<Package> =>
+        await this.apiPost(`${this.api}return`, pkg);
+
+    reject = async (pkg: Package): Promise<Package> =>
+        await this.apiPost(`${this.api}reject`, pkg);
 }

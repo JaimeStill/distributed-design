@@ -1,28 +1,43 @@
-<p class="m8 mat-headline-5">Home</p>
-<p class="m8 mat-h3">Socket Connection: {{packageListener?.status?.connectionId ?? 'Not Connected'}}</p>
-<p class="m8 mat-h3">Socket Status: {{packageListener?.status?.state}}</p>
-<div *ngIf="packages?.length > 0"
+<div class="full-height"
      flexContainer
-     flexAlign="start"
-     flexCross="start">
-    <div *ngFor="let package of packages"
-         flexContainer
+     flexDirection="column">
+    <p class="m8 mat-headline-5">Home</p>
+    <p class="m8 mat-h3">Socket Connection: {{packageListener?.status?.connectionId ?? 'Not Connected'}}</p>
+    <p class="m8 mat-h3">Socket Status: {{packageListener?.status?.state}}</p>
+    <div flexContainer
          flexDirection="column"
-         flexAlign="start"
-         flexCross="stretch"
-         class="rounded border-primary p4 m8">
+         flexChild>
         <div flexContainer
-             flexMain="space-between"
-             flexCross="center">
-             <p class="m4 mat-h4">{{package.title}}</p>
-            <p class="m4 mat-h4">{{package.id}}</p>
+             flexDirection="column"
+             flexMain="start"
+             flexCross="start"
+             flexChild>
+            <p class="m8 mat-h3">Pending Packages</p>
+            <div *ngIf="packages?.length > 0"
+                 flexContainer
+                 flexMain="start"
+                 flexCross="start">
+                <package-card *ngFor="let package of packages"
+                              [package]="package"
+                              (approve)="approve($event)"
+                              (return)="return($event)"
+                              (reject)="reject($event)"></package-card>
+            </div>
         </div>
-        <div flexContainer
-             flexMain="space-between"
-             flexCross="center">
-            <p class="m4">State: {{package.state}}</p>
-            <p class="m4">Result: {{package.result}}</p>
+        <div flexContanier
+             flexDirection="column"
+             flexMain="start"
+             flexCross="start"
+             flexChild>
+            <p class="m8 mat-h3">Package Archive</p>
+            <div *ngIf="archive?.length > 0"
+                 flexContainer
+                 flexMain="start"
+                 flexCross="start">
+                <package-card *ngFor="let package of archive"
+                              [package]="package"
+                              [showActions]="false"></package-card>
+            </div>
         </div>
-        <p class="m4">{{package.value}}</p>
     </div>
 </div>

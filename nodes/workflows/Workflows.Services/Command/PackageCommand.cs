@@ -14,18 +14,18 @@ public class PackageCommand : EntityCommand<Package, PackageEventHub, IPackageEv
 
     #region Public
 
-    public async Task<ApiMessage<Package>> SubmitPackage(Package package) =>
+    public async Task<ApiMessage<Package>> Submit(Package package) =>
         package.Id > 0
             ? await ChangeState(package, PackageStates.Pending)
             : await Save(package);
 
-    public async Task<ApiMessage<Package>> ApprovePackage(Package package) =>
+    public async Task<ApiMessage<Package>> Approve(Package package) =>
         await ChangeState(package, PackageStates.Approved);
 
-    public async Task<ApiMessage<Package>> RejectPackage(Package package) =>
+    public async Task<ApiMessage<Package>> Reject(Package package) =>
         await ChangeState(package, PackageStates.Rejected);
 
-    public async Task<ApiMessage<Package>> ReturnPackage(Package package) =>
+    public async Task<ApiMessage<Package>> Return(Package package) =>
         await ChangeState(package, PackageStates.Returned);
 
     public override async Task<ValidationMessage> Validate(Package package)
@@ -52,7 +52,7 @@ public class PackageCommand : EntityCommand<Package, PackageEventHub, IPackageEv
     
     Func<Package, Task> SyncState => async (Package package) =>
     {
-        EventMessage<Package> message = GenerateMessage(package, package.State.ToString());
+        EventMessage<Package> message = GenerateMessage(package, $"changed state to {package.State}");
 
         await events
             .Clients
@@ -74,7 +74,7 @@ public class PackageCommand : EntityCommand<Package, PackageEventHub, IPackageEv
 
                 await SyncState(package);
 
-                return new(package, $"{typeof(Package)} successfully changed state");
+                return new(package, $"{typeof(Package).Name} successfully changed state to {state}");
             }
             else
                 return new(validity);

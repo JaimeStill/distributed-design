@@ -1,0 +1,36 @@
+<div flexContainer
+     flexDirection="column"
+     flexMain="start"
+     flexCross="stretch"
+     [ngClass]="cardStyle"
+     [style.width.px]="size">
+    <action-card orientation="bottom"
+                 cardStyle="rounded-top"
+                 actionPadding="inherit">
+        <package-display cardStyle="p4"
+                         [package]="package"></package-display>
+        <ng-container *ngIf="actionsAvailable()"
+                      ngProjectAs="actions">
+            <button mat-icon-button
+                    color="warn"
+                    matTooltip="Reject Package"
+                    [matTooltipPosition]="tooltipLocation"
+                    (click)="reject.emit(package)">
+                <mat-icon>cancel</mat-icon>
+            </button>
+            <button mat-icon-button
+                    matTooltip="Return Package"
+                    [matTooltipPosition]="tooltipLocation"
+                    (click)="return.emit(package)">
+                <mat-icon>keyboard_return</mat-icon>
+            </button>
+            <button mat-icon-button
+                    color="primary"
+                    matTooltip="Approve Package"
+                    [matTooltipPosition]="tooltipLocation"
+                    (click)="approve.emit(package)">
+                <mat-icon>check_circle</mat-icon>
+            </button>
+        </ng-container>
+    </action-card>
+</div>

@@ -77,7 +77,7 @@ where Db : DbContext
         Console.WriteLine($"{action}: {message.Message}");
 
     protected virtual string SetMessage(T entity, string action) =>
-        $"{typeof(T)} {entity.Value} successfully {action}";
+        $"{typeof(T).Name} successfully {action}";
 
     protected EventMessage<T> GenerateMessage(T entity, string action)
     {
