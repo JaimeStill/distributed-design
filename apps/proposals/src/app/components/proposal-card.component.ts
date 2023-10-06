@@ -11,12 +11,20 @@ import {
     WorkflowsGateway
 } from '@distributed/toolkit';
 
+import {
+    Status,
+    Statuses
+} from '@distributed/contracts';
+
+import {
+    Package,
+    PackageStates
+} from '@workflows/contracts';
+
 import { TooltipPosition } from '@angular/material/tooltip';
 import { EventMessage } from '@distributed/core';
-import { Package, PackageStates } from '@workflows/contracts';
 import { Proposal } from '../models';
 import { ProposalQuery } from '../services';
-import { Status, Statuses } from '@distributed/contracts';
 
 @Component({
     selector: 'proposal-card',

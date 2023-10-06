@@ -10,6 +10,7 @@ import {
   SnackerService
 } from '@distributed/toolkit';
 
+import { EventMessage } from '@distributed/core';
 import { Package } from '@workflows/contracts';
 
 @Component({
@@ -32,10 +33,10 @@ export class HomeRoute implements OnInit {
   private refresh = async () =>
     this.packages = await this.packageQuery.get();
 
-  private snack = () => this.snacker.sendSuccessMessage('Data synchronized');
+  private snack = (message: string) => this.snacker.sendSuccessMessage(message);
 
-  private sync = () => {
-    this.snack();
+  private sync = (event: EventMessage<Package>) => {
+    this.snack(event.message);
     this.refresh();
   }
 
