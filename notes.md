@@ -1,5 +1,18 @@
 # Notes
 
+## Parent Directory Docker Builds
+
+When building a Docker image from a parent directory because dependencies are located outside of the project directory, the `.dockerignore` file must be in the root of the context folder. For instance, when building `/apps/proposals` from `/apps`, it must be located at `/apps/.dockerignore`.
+
+```bash
+docker builder prune --all
+
+# from distributed-design/apps
+docker build -t proposals-app -f ./proposals/Dockerfile .
+
+docker run -it --rm -p 3001:80 proposals-app
+```
+
 ## Todo
 
 * DevContainer Setup

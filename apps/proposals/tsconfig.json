@@ -24,13 +24,13 @@
     ],
     "paths": {
       "@distributed/contracts": [
-        "node_modules/@distributed/contracts/dist/*"
+        "../libs/contracts/core/dist/*"
       ],
       "@distributed/core": [
-        "node_modules/@distributed/core/dist/*"
-      ],
+        "../libs/core/dist/*"
+      ],      
       "@workflows/contracts": [
-        "node_modules/@workflows/contracts/dist/*"
+        "../libs/contracts/workflows/dist/*"
       ]
     }
   },

@@ -22,6 +22,7 @@ $Directories = @(
     "../apps/libs/core/",
     "../apps/libs/contracts/core/",
     "../apps/libs/contracts/workflows/",
+    "../apps/libs/distributed",
     "../apps/proposals/",
     "../apps/workflows/"
 )
