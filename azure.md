@@ -35,3 +35,5 @@ $user=(az ad signed-in-user show | ConvertFrom-Json)
 ```
 
 Azure SQL Database service objectives are based on the DTU purchase model. See [Azure SQL Database Pricing Details](https://azure.microsoft.com/en-us/pricing/details/azure-sql-database/single/) and ensure *Purchase Model* is set to **DTU**.
+
+[Azure Resource name rules](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules)
