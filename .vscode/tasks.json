@@ -38,7 +38,7 @@
         },
         {
             "label": "apps-clean",
-            "command": ".\\clean-apps.ps1",
+            "command": "pwsh ./clean-apps.ps1",
             "type": "shell",
             "options": {
                 "cwd": "${workspaceFolder}/scripts"
