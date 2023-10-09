@@ -1,58 +1,13 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 title: Walkthrough
 ---
 
-# Feature Walkthrough
+# Walkthrough
 
 The following guide will walk through some of the primary features of the framework, and point to some of the infrastructure that drives it.
 
 ## Setup
-
-1. Fork this repository and create a Codespace:
-
-    ![codespace-with-options](/img/walkthrough/codespace-with-options.png)
-
-    ![codespace-settings](/img/walkthrough/codespace-settings.png)
-
-2. Once the Codespace has loaded and the [`postCreateCommand`](https://github.com/JaimeStill/distributed-design/blob/main/.devcontainer/devcontainer.json#L79) has finished executing, be sure to go to extensions and reload to finalize the extension settings:
-
-    > You will get a Language Server client error on initial load. This is because the extensions are still installing and need to be reloaded per this step.
-
-    ![extension-reload](/img/walkthrough/extension-reload.png)
-
-3. Set the forwarded API ports (labeled **Proposals API (5001)** and **Workflows API (5002)**) to **Public**. If the bottom panel isn't already open, type <kbd>Ctrl + `</kbd>. Click the **Ports** tab. Right-click the port and set to **Public**:
-
-    ![port-visibility](/img/walkthrough/port-visibility.png)
-
-4. Open the **Task Explorer** panel in the side bar and run the `distributed-design/vscode/apps/build-and-install` task:
-
-    > Close all of the task terminals when they are complete
-
-    ![build-and-install](/img/walkthrough/build-and-install.png)
-    
-5. Open 3 terminals (<kbd>Ctrl + Shift + `</kbd> opens a new terminal) and run the following in each terminal:
-
-    **Proposals API**
-
-    ```bash
-    cd ./nodes/proposals/Proposals.Api
-    dotnet run
-    ```
-
-    **Workflows API**
-
-    ```bash
-    cd ./nodes/workflows/Workflows.Api
-    dotnet run
-    ```
-
-    **Workflows App**
-
-    ```bash
-    cd ./apps/workflows
-    npm run start:code
-    ```
 
 6. In the **Ports** tab of the bottom panel, you can open the process associated with each port in a new tab by clicking the globe icon in the **Forwarded Address** column. Open the **Workflows App** and **Proposals API**.
 
