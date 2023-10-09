@@ -2,6 +2,6 @@
 
 ## Cloud Deployment
 
-- [ ] Setup production configurations for nodes and apps.
-- [ ] Identify strategy for populating CORS URLs for nodes
-- [ ] Finalize [`deploy-azure.ps1`](/scripts/deploy-azure.ps1)
+- [x] Setup production configurations for nodes and apps.
+- [x] Identify strategy for populating CORS URLs for nodes
+- [x] Finalize [`deploy-azure.ps1`](/scripts/deploy-azure.ps1)
