@@ -7,8 +7,8 @@
         "start:dev": "ng serve --configuration development",
         "build:code": "ng build --configuration codespace",
         "start:code": "ng serve --configuration codespace",
-        "build": "ng build",
-        "start": "ng serve"
+        "build": "ng build --configuration production",
+        "start": "ng serve --configuration production"
     },
     "private": true,
     "dependencies": {

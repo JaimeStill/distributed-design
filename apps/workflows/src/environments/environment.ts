@@ -1,6 +1,6 @@
 export const environment = {
-  server: 'http://localhost:5002/',
-  api: 'http://localhost:5002/api/',
-  events: 'http://localhost:5002/events/',
-  workflowsGateway: 'http://localhost:5002/gateway/'
+  server: 'https://jps-sync-workflows-node.azurewebsites.net/',
+  api: 'https://jps-sync-workflows-node.azurewebsites.net/api/',
+  events: 'https://jps-sync-workflows-node.azurewebsites.net/events/',
+  workflowsGateway: 'https://jps-sync-workflows-node.azurewebsites.net/gateway/'
 };

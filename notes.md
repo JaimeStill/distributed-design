@@ -1,5 +1,26 @@
 # Notes
 
+## Deployment Notes
+
+**ASP.NET Core appsettings**
+
+Individual settings files should be created for each environment. The base `appsettings.json` should only define the common settings across all environments.
+
+When creating Azure SQL Server, be sure to create a firewall rule that enables access to Azure Services (via `--start-ip-address` and `--end-ip-address` values of `0.0.0.0`).
+
+## Parent Directory Docker Builds
+
+When building a Docker image from a parent directory because dependencies are located outside of the project directory, the `.dockerignore` file must be in the root of the context folder. For instance, when building `/apps/proposals` from `/apps`, it must be located at `/apps/.dockerignore`.
+
+```bash
+docker builder prune --all
+
+# from distributed-design/apps
+docker build -t proposals-app -f ./proposals/Dockerfile .
+
+docker run -it --rm -p 3001:80 proposals-app
+```
+
 ## Todo
 
 * DevContainer Setup

@@ -1,0 +1,54 @@
+{
+    "prefix": "jps-sync",
+    "location": "eastus",
+    "resourceGroup": "-rg",
+    "appPlan": {
+        "name": "-plan",
+        "sku": "F1"
+    },
+    "acr": {
+        "domain": "azurecr.io",
+        "name": "jpssyncregistry",
+        "sku": "Standard"
+    },
+    "sql": {
+        "server": "-sql",
+        "firewallRule": "HomeIP"
+    },
+    "apps": {
+        "path": "apps/",
+        "projects": [
+            {
+                "dockerfile": "apps/workflows/Dockerfile",
+                "hook": "deployworkflowsapp",
+                "tag": "workflows-app"
+            },
+            {
+                "dockerfile": "apps/proposals/Dockerfile",
+                "hook": "deployproposalsapp",
+                "tag": "proposals-app"
+            }
+        ]
+    },
+    "nodes": {
+        "path": "nodes/",
+        "projects": [
+            {
+                "appsettings": "nodes/workflows/Workflows.Api/appsettings.Production.json",
+                "data": "nodes/workflows/Workflows.Data",
+                "db": "workflows-node",
+                "dockerfile": "nodes/workflows/Workflows.Api/Dockerfile",
+                "hook": "deployworkflowsnode",
+                "tag": "workflows-node"
+            },
+            {
+                "appsettings": "nodes/proposals/Proposals.Api/appsettings.Production.json",
+                "data": "nodes/proposals/Proposals.Data",
+                "db": "proposals-node",
+                "dockerfile": "nodes/proposals/Proposals.Api/Dockerfile",
+                "hook": "deployproposalsnode",
+                "tag": "proposals-node"
+            }
+        ]
+    }
+}

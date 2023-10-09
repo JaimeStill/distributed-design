@@ -1,8 +1,8 @@
 export const environment = {
-  server: 'http://localhost:5001/',
-  api: 'http://localhost:5001/api/',
-  events: 'http://localhost:5001/events/',
-  packageEvents: 'http://localhost:5002/events/package/',
-  packageApi: 'http://localhost:5002/api/package/',
-  workflowsGateway: 'http://localhost:5002/gateway/'
+  server: 'https://jps-sync-proposals-node.azurewebsites.net/',
+  api: 'https://jps-sync-proposals-node.azurewebsites.net/api/',
+  events: 'https://jps-sync-proposals-node.azurewebsites.net/events/',
+  packageEvents: 'https://jps-sync-workflows-node.azurewebsites.net/events/package/',
+  packageApi: 'https://jps-sync-workflows-node.azurewebsites.net/api/package/',
+  workflowsGateway: 'https://jps-sync-workflows-node.azurewebsites.net/gateway/'
 };
