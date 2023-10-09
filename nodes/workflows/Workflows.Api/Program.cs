@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.ConfigureDbContext<WorkflowsContext>(
     builder.Configuration,
-    "App"
+    "Node"
 );
 
 builder.ConfigureGatewayOptions();

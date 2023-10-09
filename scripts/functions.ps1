@@ -1,15 +1,15 @@
-function GetJson([string] $path) {
+function Get-Json([string] $path) {
     Get-Content $path -Raw | ConvertFrom-Json
 }
 
-function GetPublicIp([string] $url = "ifcfg.me") {
+function Get-PublicIp([string] $url = "ifcfg.me") {
     Invoke-RestMethod $url
 }
 
-function GetSecureString([SecureString] $value) {
+function Get-SecureString([SecureString] $value) {
     ConvertFrom-SecureString $value -AsPlainText
 }
 
-function MergeName([string] $prefix, [string] $value) {
+function Merge-Name([string] $prefix, [string] $value) {
     Write-Output "$prefix$value"
 }

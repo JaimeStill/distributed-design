@@ -8,8 +8,8 @@ param(
 . .\functions.ps1
 
 # variable initialization
-$config = GetJson $Configuration
-$rg = MergeName $config.prefix $config.resourceGroup
+$config = Get-Json $Configuration
+$rg = Merge-Name $config.prefix $config.resourceGroup
 
 # delete resource group
 & az group delete -n $rg -y
