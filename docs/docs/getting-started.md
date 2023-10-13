@@ -101,8 +101,6 @@ To run this repository locally, you will need:
     * C# Dev Kit
     * Task Explorer
 
-### Steps
-
 1. Open the repository in Visual Studio Code.
 
 2. Go to the *Task Explorer* sidebar and run the [clean-and-build](https://github.com/JaimeStill/distributed-design/blob/main/.vscode/tasks.json#L32) task:

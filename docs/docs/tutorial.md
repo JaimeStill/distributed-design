@@ -1,6 +1,16 @@
 ---
-sidebar_position: 6
-title: "Tutorial: Building a Node"
+sidebar_position: 5
+title: "Tutorial"
 ---
 
-# Tutorial: Building a Node
+# Tutorial
+
+:::caution
+The details for this guide are still being written
+:::
+
+## Building a Node
+
+## Building an App
+
+## Deploying to Azure
