@@ -5,103 +5,178 @@ title: Walkthrough
 
 # Walkthrough
 
-The following guide will walk through some of the primary features of the framework, and point to some of the infrastructure that drives it.
+The nodes and apps built out in this repository are intended to demonstrate the real-time, cross-node data synchronization patterns enabled by the underlying libraries that they are built upon. The sections that follow will walk through the scenarios that demonstrate these patterns and highlight some of the infrastructure that enables the associated functionality.
+
+:::info
+This guide assumes that you have already followed the steps in [getting-started](/getting-started).
+:::
+
+:::tip
+This guide will provide a high-level overview of how the underlying functionality is enabled. The [Tutorial](/tutorial) will provide a thorough step-by-step guide for how to build a node and an app with the underlying libraries.
+
+Also, a lot of the infrastructure demonstrated in this walkthrough is from the underlying libraries. There is a lot of complexity that is exposed here to illustrate how this functionality is enabled. Reference the actual nodes ([*Proposals*](https://github.com/JaimeStill/distributed-design/tree/main/nodes/proposals) and [*Workflows*](https://github.com/JaimeStill/distributed-design/tree/main/nodes/workflows)) and apps ([*Proposals*](https://github.com/JaimeStill/distributed-design/tree/main/apps/proposals) and [*Workflows*](https://github.com/JaimeStill/distributed-design/tree/main/apps/workflows)) to see how the libraries simplify the implementation details.
+:::
 
 ## Setup
 
-6. In the **Ports** tab of the bottom panel, you can open the process associated with each port in a new tab by clicking the globe icon in the **Forwarded Address** column. Open the **Workflows App** and **Proposals API**.
+If you haven't already, make sure that all nodes and apps are running. Be sure the apps are started with the approprate command (`npm run start:dev` if running local or `npm run start:code` if running in a codespace). The sections that follow will demonstrate how the API facilitates real time data synchronization and cross-node interactivity. With this in mind, you will want to configure two browser windows side by side with each app running in tabs in both windows:
 
-    > Once the URL resolves for the API, it will look like you hit a dead page. Add `/swagger` to the end of the URL and it will open the Swagger interface.
+![browser-setup](/img/walkthrough/browser-setup.png)
 
-    ![running-processes](/img/walkthrough/running-processes.png)
+## Internal Node Synchronization
 
-    :::tip
-    For the remainder of the walkthrough, you will want your windows positioned as shown above. This way, when Package data is mutated, you can see the effects in real time in the Workflows app.
-    :::
+Mutations to data within a node are executed through `Command` methods. This is typically exposed as a [`Save`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/EntityCommand.cs#L154) method on a specific `Entity` type internally owned by the node. When a `Command` is executed, an `Event` is broadcast with a message containing the affected data. Any node or application with access to a `Listener` associated with the affected data can then react to the change in state.
 
-## Reactivity and After-Effects
+If additional data mutations need to occur as a result of the command, these interactions can be defined through the use of `Hook` methods. These hooks represent points in the `Command` method where functionality can be injected. For instance, [`OnAdd`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/EntityCommand.cs#L34) is executed prior to the mutations implemented in the internal [`Add`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/EntityCommand.cs#L98) method. On the other hand, [`AfterUpdate`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/EntityCommand.cs#L40) is executed after the mutations implemented in the internal [`Update`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/EntityCommand.cs#L127) method. [`OnSave`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/EntityCommand.cs#L36) is executed prior to the mutations of either `Add` or `Update` via the public [`Save`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/EntityCommand.cs#L164) method.
 
-The following section will demonstrate how the API facilitates real time data synchronization and facilitates cross-node interactivity.
+You'll notice that the [`Save`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/EntityCommand.cs#L160) and [`Remove`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/EntityCommand.cs#L190) methods are [transactional](https://learn.microsoft.com/en-us/ef/core/saving/transactions) through the use of `db.Database.BeginTransactionAsync`. If any aspect of the method fails, to include the [result of any hook calls](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/EntityCommand.cs#L24), the entire transaction is rolled back.
 
-1. In the browser tab for the **Proposals API** Swagger interface, expand the `/api/Proposal/Save` endpoint. Click **Try it out** and paste the following value and click **Execute**:
+To see this in action, execute the following steps with both browser windows showing the *Proposals* app:
 
-    ```json
-    {
-        "value": "Demonstrate reactivity and after-effects",
-        "title": "Reactivity Proposal"
-    }
-    ```
+1. Click the *Create Proposal* button indicated by the plus icon to the left of the **Home** heading.
 
-    ![proposal-success](/img/walkthrough/proposal-success.png)
-
-2. In the **Workflows** section, expand the `/api/Workflows/SubmitPackage` endpoint. Click **Try it out**, paste the following value, and click **Execute**:
-
-    ```json
-    {
-        "value": "string",
-        "state": "Pending",
-        "result": "Created",
-        "entityId": 1,
-        "entityType": "Proposals.Entities.Proposal",
-        "context": "Approval for Acquisition",
-        "title": "Proposal Package"
-    }
-    ```
+2. Provide a `Title` and `Value` in the *Add Proposal* dialog, then click **Save Proposal**:
 
     <video controls width="100%">
-        <source src="https://github.com/JaimeStill/distributed-design/assets/14102723/476bdc17-f9d4-45c4-b978-4192e695fa6c" />
+        <source src="https://github.com/JaimeStill/distributed-design/assets/14102723/287064bd-54de-4844-a3b5-f726afea3763" />
     </video>
 
-3. In the **Proposals** section, expand `/api/Proposal/Get`, click **Try it out**, and click **Execute**. You'll notice that the `Proposal` has been modified with `"packageId": 1`. This is because the [`PackageListener`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/proposals/Proposals.Services/Event/Listeners/PackageEventListener.cs) intercepts `OnAdd` events from the **Workflows API** () and passes them to the [`PackageSaga.OnAdd`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/proposals/Proposals.Services/Saga/PackageSaga.cs) handler.
+There are two things to note about this transaction:
 
-    :::tip
-    See [`PackageEventHub`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/workflows/Workflows.Services/Event/PackageEventHub.cs) and [`PackageCommand`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/workflows/Workflows.Services/Command/PackageCommand.cs). The [**Sync hooks**](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/EntityCommand.cs#L44) in the underlying `EntityCommand` broadcast events for *Add*, *Update*, and *Remove*.
-    :::
+1. The `Proposal` record that was created synchronized across all connected instances of the Proposals app.
 
-    ![proposal-with-package-id](/img/walkthrough/proposal-with-package-id.png)
+2. In addition to creating a `Proposal`, an associated `Status` was created (illustrated by the *Created* status to the top right of the Proposal card in the application).
 
-4. Additionally, if a Package is removed and it is the active Package for a Proposal, the Saga will set `Proposal.PackageId = null`. Navigate to the **Workflows** section, expand `/api/Workflows/GetPackagesByType/{entityType}`, click **Try it out**, type `Proposals.Entities.Proposal` in the `entityType` field, then click **Execute**:
+The [`EntityCommand`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/EntityCommand.cs) class defines a [`SyncAdd`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/EntityCommand.cs#L44) hook that is called after the internal [`Add`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/EntityCommand.cs#L107) transaction is successful. Every `EntityCommand` must be initialized with an [`EventHub`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/Events/Hub/EventHub.cs), which is a [strongly-typed SignalR hub](https://learn.microsoft.com/en-us/aspnet/core/signalr/hubs?view=aspnetcore-7.0#strongly-typed-hubs) that is defined with an [`IEventHub`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/Events/Hub/IEventHub.cs) interface. When `SyncAdd` is called, it broadcasts the added entity through the [`IEventHub.OnAdd`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/Events/Hub/IEventHub.cs#L7) method.
 
-    ![get-packages-by-type](/img/walkthrough/get-packages-by-type.png)
+A TypeScript [`EventListener`](https://github.com/JaimeStill/distributed-design/blob/main/apps/libs/core/src/services/events/event-listener.ts) class is provided that allows you to define interfaces to `EventHub` instances. In this case, a [`ProposalListener`](https://github.com/JaimeStill/distributed-design/blob/main/apps/proposals/src/app/services/proposal-listener.ts) is defined and injected into the [`HomeRoute`](https://github.com/JaimeStill/distributed-design/blob/main/apps/proposals/src/app/routes/home/home.route.ts#L64). In the [`ngOnInit`](https://github.com/JaimeStill/distributed-design/blob/main/apps/proposals/src/app/routes/home/home.route.ts#L88) lifecycle hook, the listener is initialized and events are registered.
 
-5. Copy the Package object in the **Response body** section, expand `/api/Workflows/WithdrawPackage`, click **Try it out**, paste the JSON object into the **Request body** section, and click **Execute**:
+The [`ProposalCommand`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/proposals/Proposals.Services/Command/ProposalCommand.cs) provides an [`AfterAdd`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/proposals/Proposals.Services/Command/ProposalCommand.cs#L26) hook that [generates a created status](https://github.com/JaimeStill/distributed-design/blob/main/nodes/contracts/core/Extensions/StatusExtensions.cs#L6) and saves it to the proposal.
 
-    <video controls width="100%">
-        <source src="https://github.com/JaimeStill/distributed-design/assets/14102723/8fec8622-94db-463a-8cd1-70446bf253d2" />
-    </video>
+## Cross-Node Synchronization
 
-6. In addition to the Package disappearing in the **Workflows App**, `Proposal.PackageId` was also set to null. Verify by executing the `/api/Proposal/Get` endpoint:
+There are three primary interfaces that facilitate cross-node interactivity:
 
-    ![proposal-without-package](/img/walkthrough/proposal-without-package.png)
+* `Contract` - an object that is sent to the remote node to initiate interactivity and track progress across the service lifetime.
+    * [`Package`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/contracts/workflows/Classes/Package.cs) is a *Workflows* node `Contract`.
+* `Gateway` - the API interface for sending to and retrieving data from a remote node.
+    * [`GatewayController`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/workflows/Workflows.Api/Controllers/GatewayController.cs) defines the `Gateway` API for the *Workflows* node.
+    * [`WorkflowsGateway`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/contracts/workflows/WorkflowsGateway.cs) is the `Gateway` Service for interfacing with the *Workflows* node.
+* `Listener` - the event listener provided by the remote node for tracking contract events.
+    * [`PackageEventListener`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/proposals/Proposals.Services/Event/Listeners/PackageEventListener.cs) handles `Package` events generated by *Workflows* node.
 
-## Contract Cleanup with Gateways
+The following scenarios show patterns for working with these interfaces.
 
-The **Workflows** endpoints in the **Proposals API** are just a proxy to the **Workflows API**. When the endpoint is hit in the **Proposals API**, the [`WorkflowsController`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/proposals/Proposals.Api/Controllers/WorkflowsController.cs) receives the request and forwards it to the [`GatewayController`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/workflows/Workflows.Api/Controllers/GatewayController.cs) in the **Workflows API** through the [`WorkflowsGateway`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/contracts/workflows/WorkflowsGateway.cs) client.
+### Submitting a Contract
 
-Sagas and Event Listeners work great for reacting to changes in data exposed through public contracts. But how would you handle the inverse? If we delete a Proposal and there is a Package associated with it, Proposal is not exposed as a contract for the **Workflows API** to build infrastructure around. To handle this scenario, we can leverage injecting the **Gateway** client into a command service and handling cleanup inside of service hooks.
+The following interactions occur to facilitate submitting a contract to a remote node:
 
-1. Create another Package using the below JSON object at the `/api/Workflows/SubmitPackage` endpoint:
+1. The data for the contract is filled out by the initiating node
+2. The contract is sent through the gateway interface for the remote node
+3. The remote node receives and processes the contract
+4. The remote node broadcasts an event when the contract has been successfully processed
 
-    ```json
-    {
-        "value": "string",
-        "state": "Pending",
-        "result": "Created",
-        "entityId": 1,
-        "entityType": "Proposals.Entities.Proposal",
-        "context": "Approval for Acquisition",
-        "title": "Proposal Package"
-    }
-    ```
+To see this in action, set the left browser tab to the *Proposals* app and the right browser tab to the *Workflows* app. Execute the following steps:
 
-2. Execute the `/api/Proposals/Get` endpoint and copy the JSON object for the proposal:
+1. In the *Proposals* app on the *Documentation Proposal* card, click the middle **Submit Package** icon button represented by a blue right-facing arrow.
 
-    ![get-package-again](/img/walkthrough/get-package-again.png)
+2. A *PackageDialog* will open. Provide entries for `Title` and `Value`, then click **Save Package**.
 
-3. Paste the Proposal JSON object into `/api/Proposals/Remove` and Execute. You will notice that the Package in the **Workflows App** is removed along with the Proposal:
+<video controls width="100%">
+    <source src="https://github.com/JaimeStill/distributed-design/assets/14102723/2891310b-fab6-4a75-9d90-08ab59aa9aed" />
+</video>
 
-    <video controls width="100%">
-        <source src="https://github.com/JaimeStill/distributed-design/assets/14102723/b7504f08-dc1b-4e3d-b446-f72688df7fdb" />
-    </video>
+The [`PackageDialog`](https://github.com/JaimeStill/distributed-design/blob/main/apps/libs/distributed/projects/toolkit/src/dialogs/package.dialog.ts) used to submit the package, along with its associated [`PackageForm`](https://github.com/JaimeStill/distributed-design/blob/main/apps/libs/distributed/projects/toolkit/src/forms/package.form.ts), are exposed through the [`@distributed/toolkit`](https://github.com/JaimeStill/distributed-design/tree/main/apps/libs/distributed/projects/toolkit) library as part of the common infrastructure for interfacing with the Workflows node. When the [`Package`](https://github.com/JaimeStill/distributed-design/blob/main/apps/libs/contracts/workflows/src/interfaces/package.ts) contract is saved through the PackageForm, it uses the [`WorkflowsGateway`](https://github.com/JaimeStill/distributed-design/blob/main/apps/libs/distributed/projects/toolkit/src/gateways/workflows.gateway.ts) service to submit the package. The gateway endpoint is configured within each app whenever the [`ToolkitModule`](https://github.com/JaimeStill/distributed-design/blob/main/apps/libs/distributed/projects/toolkit/src/toolkit.module.ts) is imported (see [Proposals - AppModule](https://github.com/JaimeStill/distributed-design/blob/main/apps/proposals/src/app/app.module.ts#L42)).
 
-This is because the [`ProposalCommand`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/proposals/Proposals.Services/Command/ProposalCommand.cs#L46) will clean up any active package associated with it when it is being removed in the `AfterRemove` service hook. It is able to do so because [`WorkflowsGateway` is injected into `ProposalCommand`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/proposals/Proposals.Services/Command/ProposalCommand.cs#L16).
+The [`GatewayController.SubmitPackage`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/workflows/Workflows.Api/Controllers/GatewayController.cs#L45) method in the workflows node passes the received package to the [`PackageCommand.Submit`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/workflows/Workflows.Services/Command/PackageCommand.cs#L17) method. Since this is a new package, the `Save` method will be called, which will trigger the `PackageCommand.SyncAdd` hook (in the same way as the `ProposalCommand` service when a new Proposal is created).
+
+The [`PackageListener`](https://github.com/JaimeStill/distributed-design/blob/main/apps/libs/distributed/projects/toolkit/src/nodes/package-listener.ts) defined in `@distributed/toolkit` is injected in the home route of both the [proposals app](https://github.com/JaimeStill/distributed-design/blob/main/apps/proposals/src/app/routes/home/home.route.ts#L59) and the [workflows app](https://github.com/JaimeStill/distributed-design/blob/main/apps/workflows/src/app/routes/home/home.route.ts#L37). Both routes initialize the listener in the respective `ngOnInit` lifecycle hooks: see [proposals](https://github.com/JaimeStill/distributed-design/blob/main/apps/proposals/src/app/routes/home/home.route.ts#L82) and [workflows](https://github.com/JaimeStill/distributed-design/blob/main/apps/workflows/src/app/routes/home/home.route.ts#L71).
+
+The proposals app uses an `Observable` trigger to feed into each [`ProposalCard`](https://github.com/JaimeStill/distributed-design/blob/main/apps/proposals/src/app/components/proposal-card.component.ts#L54). The card component uses this trigger to [handle package events](https://github.com/JaimeStill/distributed-design/blob/main/apps/proposals/src/app/components/proposal-card.component.ts#L106) if the received event is associated with its proposal.
+
+If you retrieve the `Proposal` both before and after submitting the `Package`, you'll notice that a `packageId` is assigned when a `Package` is successfully submitted:
+
+**Before**
+
+```json
+{
+    "statusId": 1,
+    "title": "Documentation Proposal",
+    "id": 1,
+    "type": "Proposals.Entities.Proposal",
+    "value": "A demonstrative Proposoal for documentation purposes.",
+    "dateCreated": "2023-10-13T12:38:52.3668313",
+    "dateModified": "2023-10-13T13:11:11.73073"
+}
+```
+
+**After**
+
+```json
+{
+    "statusId": 1,
+    "packageId": 1,
+    "title": "Documentation Proposal",
+    "id": 1,
+    "type": "Proposals.Entities.Proposal",
+    "value": "A demonstrative Proposoal for documentation purposes.",
+    "dateCreated": "2023-10-13T12:38:52.3668313",
+    "dateModified": "2023-10-13T13:15:11.73073"
+}
+```
+
+Leveraging an [`EventListener`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/Events/Client/EventListener.cs) is not exclusive to client apps. In fact, synchronizing node data that's associated with contracts in remote nodes is exclusively handled through [`EntitySaga`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/core/Services/EntitySaga.cs) services through events.
+
+In this case, the proposals node defines a [`PackageListener`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/proposals/Proposals.Services/Event/Listeners/PackageEventListener.cs) that reacts to `Package` events. In this case, whenever a `Package` is added, the [`OnAdd`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/proposals/Proposals.Services/Event/Listeners/PackageEventListener.cs#L18) event triggers the [`PackageSaga.OnAdd`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/proposals/Proposals.Services/Saga/PackageSaga.cs#L21) method. Internal changes spawned by a `Saga` will still broadcast update events for the affected Entities.
+
+### Reacting to Contract Changes
+
+The [`PackageEventHub`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/workflows/Workflows.Services/Event/PackageEventHub.cs) defined by the workflows node provides an additional [`OnStateChanged`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/workflows/Workflows.Services/Event/IPackageEventHub.cs#L7) event. This is used to isolate changes to [`Package.State`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/contracts/workflows/Classes/Package.cs#L10) from changes to the editable `Package` entity fields.
+
+In the [`PackageCommand`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/workflows/Workflows.Services/Command/PackageCommand.cs) service, there is validation to ensure [state is not improperly modified](https://github.com/JaimeStill/distributed-design/blob/main/nodes/workflows/Workflows.Services/Command/PackageCommand.cs#L121) as well as validation to [ensure proper state transitions](https://github.com/JaimeStill/distributed-design/blob/main/nodes/workflows/Workflows.Services/Command/PackageCommand.cs#L103). Also, a `Package` can only be modified [if it is not in a completed state](https://github.com/JaimeStill/distributed-design/blob/main/nodes/workflows/Workflows.Services/Command/PackageCommand.cs#L128).
+
+The `PackageCommand` service also defines methods for [changing the state](https://github.com/JaimeStill/distributed-design/blob/main/nodes/workflows/Workflows.Services/Command/PackageCommand.cs#L22) of a `Package`.
+
+In the Workflows app, pending packages provide three actions for handling that package:
+
+![pending-package-card](/img/walkthrough/pending-package-card.png)
+
+From left to right, those actions are:
+
+* **Reject** - permanently reject the package that was submitted
+* **Return** - return the package that was submitted for corrections
+* **Approve** - approve the package and change the status to the associated `Entity`
+
+The following clips demonstrate returning, resubmitting, and approving:
+
+**Returning a Package**
+
+<video controls width="100%">
+    <source src="https://github.com/JaimeStill/distributed-design/assets/14102723/de84c3ef-bca0-48fe-8a09-83d7e655c3da" />
+</video>
+
+**Resubmitting a Package**
+
+<video controls width="100%">
+    <source src="https://github.com/JaimeStill/distributed-design/assets/14102723/c8652959-d902-4c57-87dc-807d07ffdabe" />
+</video>
+
+**Approving a Package**
+
+<video controls width="100%">
+    <source src="https://github.com/JaimeStill/distributed-design/assets/14102723/4d5314dd-b16b-4bf3-a08b-29ceb53fdcbc" />
+</video>
+
+The `Proposal` is able to detect when the associated `Package` is complete because the [`PackageListener.OnStateChanged`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/proposals/Proposals.Services/Event/Listeners/PackageEventListener.cs#L30) event triggers the [`PackageSaga.OnStateChanged`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/proposals/Proposals.Services/Saga/PackageSaga.cs#L49) method. The [`ProposalCardComponent`](https://github.com/JaimeStill/distributed-design/blob/main/apps/proposals/src/app/components/proposal-card.component.ts#L117) is able to track whether a `Package` can be submitted via the [`canSubmit`](https://github.com/JaimeStill/distributed-design/blob/main/apps/proposals/src/app/components/proposal-card.component.ts#L117) function, which is kept synchronized through the [`handlePackageEvent`](https://github.com/JaimeStill/distributed-design/blob/main/apps/proposals/src/app/components/proposal-card.component.ts#L106) trigger.
+
+### Cleaning Up Contracts
+
+It's easy to synchronize internal state with changes to contracts through events because the node is aware of the remote node. The inverse, however, is not true. The remote node is never aware of the nodes that consume it. The only link it ever has to its dependent nodes is through the contract data it receives. If a `Package` contract is submitted based on an associated `Proposal` and the `Proposal` is later removed, how does the corresponding `Package` get cleaned up as well?
+
+By leveraging `Command` hooks and `Gateway` services, associated contract data can be cleaned up. The following clip demonstrates submitting a `Package`, then removing the associated `Proposal`:
+
+<video controls width="100%">
+    <source src="https://github.com/JaimeStill/distributed-design/assets/14102723/3fca664c-1a1d-4cf0-aa56-ab80a36a1476" />
+</video>
+
+If you look at the [`ProposalCommand`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/proposals/Proposals.Services/Command/ProposalCommand.cs) service, you'll see that the [`WorkflowsGateway`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/contracts/workflows/WorkflowsGateway.cs) service is [injected in the constructor](https://github.com/JaimeStill/distributed-design/blob/main/nodes/proposals/Proposals.Services/Command/ProposalCommand.cs#L16). The [`AfterRemove`](https://github.com/JaimeStill/distributed-design/blob/main/nodes/proposals/Proposals.Services/Command/ProposalCommand.cs#L46) hook tries to retrieve an active `Package` associated with the `Proposal` being removed. If it is found, the `WorkflowsGateway.WithdrawPackage` method is called. If the package is unable to be withdrawn for any reason, the whole transaction will be aborted and the `Proposal` will not be removed.
